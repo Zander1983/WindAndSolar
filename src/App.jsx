@@ -49,7 +49,7 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState("Ireland"); // Pre-select Ireland
 
   const [showFAQ, setShowFAQ] = useState(false); // State for showing FAQ
-  const [newGrid, setNewGrid] = useState(null); // State for storing new grid calculation
+  const [newGrid, setNewGrid] = useState({}); // State for storing new grid calculation
   const [turbineCapacityMW, setTurbineCapacityMW] = useState(6.6); // Average Turbine Capacity
   const [windCapacityFactor, setWindCapacityFactor] = useState(34); // Wind Capacity Factor in %
   const [solarCapacityFactor, setSolarCapacityFactor] = useState(11); // Solar Capacity Factor in %
@@ -74,7 +74,6 @@ function App() {
       return acc + (curr.numVehicles && curr.distance ? curr.numVehicles * curr.distance * curr.kWhPerKm / 1e9 : 0);
     }, 0);
 
-    console.log("roadTransportTotal is ", roadTransportTotal);
 
     // Constants
     const dieselEnergyContent = 11.9; // kWh per liter
@@ -84,23 +83,17 @@ function App() {
 
     // Input: Diesel consumption in millions of liters
     const railDieselMillionLiters = formData.railDiesel;
-
     // Step 1: Convert diesel to total energy (GWh)
-    const totalDieselEnergyGWh = railDieselMillionLiters * 1_000_000 * dieselEnergyContent / 1_000; // Convert to GWh
-
+    const totalDieselEnergyGWh = railDieselMillionLiters * dieselEnergyContent / 1000000; // Convert to GW
     // Step 2: Calculate useful work from diesel
     const usefulWorkGWh = totalDieselEnergyGWh * dieselEngineEfficiency;
-
     // Step 3: Calculate electricity required (before losses)
     const electricityRequiredGWh = usefulWorkGWh / electricLocomotiveEfficiency;
-
     // Step 4: Account for transmission losses
     const electricityRequiredWithLossesGWh = electricityRequiredGWh / (1 - transmissionLoss);
-
     // Step 5: Convert GWh to TWh
-    const electricityRequiredTWh = electricityRequiredWithLossesGWh / 1_000;
+    const electricityRequiredRailTWh = electricityRequiredWithLossesGWh / 1000;
 
-    console.log(`Electricity required: ${electricityRequiredTWh.toFixed(3)} TWh`);
 
 
     const residentialHeat = formData.heat.residentialHeat ? parseFloat(formData.heat.residentialHeat) / 4 : 0;
@@ -111,13 +104,17 @@ function App() {
       parseFloat(formData.electricity.existingFossilFuelElectricity || 0) +
       residentialHeat +
       industryHeat +
-      roadTransportTotal;
+      roadTransportTotal + 
+      electricityRequiredRailTWh;
 
-    if (newGridSize) {
+
+    //if (newGridSize) {
       const { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels } = calculateWindAndSolar(newGridSize);
       setNewGrid({
         total: newGridSize,
+        heat: residentialHeat + industryHeat,
         roadTransport: roadTransportTotal,
+        electricityRequiredRailTWh: electricityRequiredRailTWh,
         extraWindCapacityGW,
         numTurbines,
         extraSolarCapacityGW,
@@ -127,13 +124,13 @@ function App() {
         currentWindCapacityGW: formData.electricity.currentWindCapacityGW,
         currentSolarCapacityGW: formData.electricity.currentSolarCapacityGW,        
       });
-    }
+    //}
   }, [formData, turbineCapacityMW, windCapacityFactor, solarCapacityFactor, windSolarRatio]);
 
 
 
   const handleParameterChange = (setter, value) => {
-    console.log("setter, value is ", setter, value);
+  
     setter(value);
   };
 
@@ -176,7 +173,6 @@ function App() {
         totalElectricity: totalElectricity
       };
     });
-    console.log("updatedTransport is ", updatedTransport);
     return updatedTransport;
   };
 
@@ -190,7 +186,7 @@ function App() {
       setFormData({ ...defaultData[country] });
     } else {
       setFormData(initialFormData);
-      setNewGrid(null);
+      setNewGrid({});
     }
   };
 
@@ -214,7 +210,7 @@ function App() {
               },
             },
           };
-        } else {
+        } else if (field){
           // Top-level fields (e.g., electricity.existingCarbonFreeElectricity)
           return {
             ...prev,
@@ -222,6 +218,12 @@ function App() {
               ...prev[field],
               [category]: value, // Update the specific category
             },
+          };
+        } else {
+          return {
+            ...prev,
+            [category]: value, // Update the specific category
+          
           };
         }
       });
@@ -279,7 +281,63 @@ function App() {
     return { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels };
   };
   
-  
+  const processedData = {
+    labels: ['Existing Grid', 'New Grid (Fossil-Free)'],
+    datasets: [
+      {
+        label: 'Existing Renewable Electricity',
+        data: [
+          newGrid.existingCarbonFreeElectricity
+            ? newGrid.existingCarbonFreeElectricity
+            : 0,
+          newGrid.existingCarbonFreeElectricity
+            ? newGrid.existingCarbonFreeElectricity
+            : 0,
+        ],
+        backgroundColor: '#4CAF50',
+      },
+      {
+        label: 'Existing Fossil Fuel Electricity Converted To Renewable',
+        data: [
+          0,
+          newGrid.existingFossilFuelElectricity
+            ? newGrid.existingFossilFuelElectricity
+            : 0,
+        ],
+        backgroundColor: '#8BC34A',
+      },
+      {
+        label: 'Electricity for Road Transport',
+        data: [
+          0,
+          newGrid.roadTransport
+            ? parseFloat(newGrid.roadTransport.toFixed(2))
+            : 0,
+        ],
+        backgroundColor: '#CDDC39',
+      },
+      {
+        label: 'Electricity for Rail',
+        data: [
+          0,
+          newGrid.electricityRequiredRailTWh
+            ? parseFloat(newGrid.electricityRequiredRailTWh.toFixed(2))
+            : 0,
+        ],
+        backgroundColor: '#CDDC39',
+      },
+      {
+        label: 'Electricity for Heat',
+        data: [
+          0,
+          newGrid.heat ? parseFloat(newGrid.heat.toFixed(2)) : 0,
+        ],
+        backgroundColor: '#FFEB3B',
+      },
+    ].filter(dataset => dataset.data.some(value => value > 0)), // Include only datasets with values > 0
+  };
+
+  console.log("newGrid.electricityRequiredRailTWh is ", newGrid.electricityRequiredRailTWh);
 
   return (
     <div className="App">
@@ -323,17 +381,21 @@ function App() {
           flexWrap: 'wrap',
           gap: '20px',
           marginTop: '20px',
+          width: '100%',
+          maxWidth: '100vw', // Ensures full viewport width
+          boxSizing: 'border-box', // Includes padding and borders in width calculations
         }}
       >
         {/* Electricity Input */}
         <div
           style={{
-            flex: '1 1 calc(33% - 20px)', // Adjusts to fit 3 panels per row
-            minWidth: '300px',
+            flex: '1 1 calc(33% - 20px)', // Allows three panels per row
+            minWidth: '250px', // Reduced for better responsiveness
             padding: '15px',
             border: '1px solid #007BFF',
             borderRadius: '5px',
             backgroundColor: '#E3F2FD',
+            boxSizing: 'border-box',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
@@ -344,7 +406,6 @@ function App() {
             />
             <h3 style={{ color: '#007BFF', margin: 0 }}>Electricity</h3>
           </div>
-
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
             <label style={{ textAlign: 'right', marginRight: '10px' }}>
               Carbon Free Electricity (TWh):
@@ -357,7 +418,8 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                width: '90%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}
             />
             <label style={{ textAlign: 'right', marginRight: '10px' }}>
@@ -371,68 +433,66 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                width: '90%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}
             />
-
-
-              <label style={{ textAlign: 'right', marginRight: '10px' }}>
-                Current Wind Capacity (GW):
-              </label>
-              <input
-                type="number"
-                value={formData.electricity.currentWindCapacityGW}
-                onChange={(e) => handleChange(e, 'currentWindCapacityGW', 'electricity')}
-                style={{
-                  padding: '8px',
-                  borderRadius: '5px',
-                  border: '1px solid #CCC',
-                  width: '90%',
-                }}
-              />
-
-              <label style={{ textAlign: 'right', marginRight: '10px' }}>
-                Current Solar Capacity (GW):
-              </label>
-              <input
-                type="number"
-                value={formData.electricity.currentSolarCapacityGW}
-                onChange={(e) => handleChange(e, 'currentSolarCapacityGW', 'electricity')}
-                style={{
-                  padding: '8px',
-                  borderRadius: '5px',
-                  border: '1px solid #CCC',
-                  width: '90%',
-                }}
-              />
+            <label style={{ textAlign: 'right', marginRight: '10px' }}>
+              Current Wind Capacity (GW):
+            </label>
+            <input
+              type="number"
+              value={formData.electricity.currentWindCapacityGW}
+              onChange={(e) => handleChange(e, 'currentWindCapacityGW', 'electricity')}
+              style={{
+                padding: '8px',
+                borderRadius: '5px',
+                border: '1px solid #CCC',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+              }}
+            />
+            <label style={{ textAlign: 'right', marginRight: '10px' }}>
+              Current Solar Capacity (GW):
+            </label>
+            <input
+              type="number"
+              value={formData.electricity.currentSolarCapacityGW}
+              onChange={(e) => handleChange(e, 'currentSolarCapacityGW', 'electricity')}
+              style={{
+                padding: '8px',
+                borderRadius: '5px',
+                border: '1px solid #CCC',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
         </div>
 
-
-     </div>
-
-  {/* Heat Input */}
-  <div
-    style={{
-      flex: '1 1 calc(33% - 20px)',
-      minWidth: '300px',
-      padding: '15px',
-      border: '1px solid #FF5722',
-      borderRadius: '5px',
-      backgroundColor: '#FFEBEE',
-    }}
-  >
-    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-      <img
-        src="https://img.icons8.com/?size=100&id=zD-VLZTPKlpb&format=png&color=000000"
-        alt="Heat"
-        style={{ marginRight: '10px' }}
-        height="48px"
-        width="48px"
-      />
-      <h3 style={{ color: '#FF5722', margin: 0 }}>Non-renewable Heat</h3>
-    </div>
-
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
+        {/* Heat Input */}
+        <div
+          style={{
+            flex: '1 1 calc(33% - 20px)',
+            minWidth: '250px',
+            padding: '15px',
+            border: '1px solid #FF5722',
+            borderRadius: '5px',
+            backgroundColor: '#FFEBEE',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <img
+              src="https://img.icons8.com/?size=100&id=zD-VLZTPKlpb&format=png&color=000000"
+              alt="Heat"
+              style={{ marginRight: '10px' }}
+              height="48px"
+              width="48px"
+            />
+            <h3 style={{ color: '#FF5722', margin: 0 }}>Non-renewable Heat</h3>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
             <label style={{ textAlign: 'right', marginRight: '10px' }}>
               Home/Office Heating (TWh):
             </label>
@@ -444,7 +504,8 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                width: '90%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}
             />
             <label style={{ textAlign: 'right', marginRight: '10px' }}>
@@ -458,12 +519,35 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                width: '90%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}
             />
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
+        {/* Rail Input */}
+        <div
+          style={{
+            flex: '1 1 calc(33% - 20px)',
+            minWidth: '250px',
+            padding: '15px',
+            border: '1px solid #FF5722',
+            borderRadius: '5px',
+            backgroundColor: '#FFF9C4',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <img
+              width="48"
+              height="48"
+              src="https://img.icons8.com/emoji/48/high-speed-train-emoji.png"
+              alt="high-speed-train-emoji"
+            />
+            <h3 style={{ color: '#FF5722', margin: 0 }}>Rail</h3>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
             <label style={{ textAlign: 'right', marginRight: '10px' }}>
               Diesel Fuel Used (litres):
             </label>
@@ -475,114 +559,108 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                width: '90%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}
             />
-   
+          </div>
         </div>
 
-  </div>
+          {/* Transport Inputs */}
+          <div
+          style={{
+            width: '100%', // Full width of the parent container
+            padding: '15px',
+            border: '1px solid #4CAF50',
+            borderRadius: '5px',
+            backgroundColor: '#E8F5E9',
+            boxSizing: 'border-box', // Ensures padding is included in width
+          }}
+        >
 
-  {/* Transport Inputs */}
-  <div
-  style={{
-    width: '100%', // Full width of the parent container
-    padding: '15px',
-    border: '1px solid #4CAF50',
-    borderRadius: '5px',
-    backgroundColor: '#E8F5E9',
-    boxSizing: 'border-box', // Ensures padding is included in width
-  }}
->
-
-  <table
-    style={{
-      width: '100%', // Full width of the roadTransport panel
-      borderCollapse: 'collapse',
-      textAlign: 'left',
-    }}
-  >
-    <thead>
-      <tr>
-        <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
-    <img
-      src="https://img.icons8.com/fluency/48/car.png"
-      alt="Transport"
-      style={{ marginRight: '10px' }}
-    />
-    <h3 style={{ color: '#4CAF50', margin: 0 }}>Road Transport</h3>
-  </div></th>
-        <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Number of Vehicles</th>
-        <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Average Distance (km)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {Object.keys(formData.roadTransport).map((category) => (
-        <tr key={category}>
-          <td style={{ padding: '10px', fontWeight: 'bold', color: '#388E3C' }}>
-            {category === 'cars'
-              ? 'Cars'
-              : category === 'busesSmall'
-              ? 'Buses Small'
-              : category === 'busesLarge'
-              ? 'Buses Large'
-              : category === 'lightGoods'
-              ? 'Light Goods Vehicles'
-              : category === 'heavyGoods'
-              ? 'Heavy Goods Vehicles'
-              : category === 'tractors'
-              ? 'Tractors'
-              : category === 'motorcycles'
-              ? 'Motorcycles'
-              : category === 'other'
-              ? 'Other Vehicles'
-              : ''}
-          </td>
-          <td style={{ padding: '10px' }}>
-            <input
-              type="number"
-              value={formData.roadTransport[category].numVehicles}
-              onChange={(e) => handleChange(e, 'roadTransport', category, 'numVehicles')}
-              style={{
-                width: '100%',
-                padding: '5px',
-                borderRadius: '5px',
-                border: '1px solid #CCC'
-              }}
+          <table
+            style={{
+              width: '100%', // Full width of the roadTransport panel
+              borderCollapse: 'collapse',
+              textAlign: 'left',
+            }}
+          >
+            <thead>
+              <tr>
+                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+            <img
+              src="https://img.icons8.com/fluency/48/car.png"
+              alt="Transport"
+              style={{ marginRight: '10px' }}
             />
-          </td>
-          <td style={{ padding: '10px' }}>
-            <input
-              type="number"
-              value={formData.roadTransport[category].distance}
-              onChange={(e) => handleChange(e, category, 'distance')}
-              style={{
-                width: '100%',
-                padding: '5px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-              }}
-            />
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+            <h3 style={{ color: '#4CAF50', margin: 0 }}>Road Transport</h3>
+          </div></th>
+                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Number of Vehicles</th>
+                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Average Distance (km)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(formData.roadTransport).map((category) => (
+                <tr key={category}>
+                  <td style={{ padding: '10px', fontWeight: 'bold', color: '#388E3C' }}>
+                    {category === 'cars'
+                      ? 'Cars'
+                      : category === 'busesSmall'
+                      ? 'Buses Small'
+                      : category === 'busesLarge'
+                      ? 'Buses Large'
+                      : category === 'lightGoods'
+                      ? 'Light Goods Vehicles'
+                      : category === 'heavyGoods'
+                      ? 'Heavy Goods Vehicles'
+                      : category === 'tractors'
+                      ? 'Tractors'
+                      : category === 'motorcycles'
+                      ? 'Motorcycles'
+                      : category === 'other'
+                      ? 'Other Vehicles'
+                      : ''}
+                  </td>
+                  <td style={{ padding: '10px' }}>
+                    <input
+                      type="number"
+                      value={formData.roadTransport[category].numVehicles}
+                      onChange={(e) => handleChange(e, 'roadTransport', category, 'numVehicles')}
+                      style={{
+                        width: '100%',
+                        padding: '5px',
+                        borderRadius: '5px',
+                        border: '1px solid #CCC'
+                      }}
+                    />
+                  </td>
+                  <td style={{ padding: '10px' }}>
+                    <input
+                      type="number"
+                      value={formData.roadTransport[category].distance}
+                      onChange={(e) => handleChange(e, 'roadTransport', category, 'distance')}
+                      style={{
+                        width: '100%',
+                        padding: '5px',
+                        borderRadius: '5px',
+                        border: '1px solid #CCC',
+                      }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
 
+      </div>
 
-
-
-
-
-
-</div>
 
 
       
 
-      {newGrid && (
+      
 
 
 
@@ -639,68 +717,52 @@ function App() {
               {/* Grid Comparison - Chart */}
               <div style={{ flex: '5', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
                 <h2>Grid Comparison</h2>
+
                 <Bar
-                  data={{
-                    labels: ['Existing Grid', 'New Grid (Fossil-Free)'],
-                    datasets: [
-                      {
-                        label: 'Existing Renewable Electricity',
-                        data: [newGrid.existingCarbonFreeElectricity, newGrid.existingCarbonFreeElectricity],
-                        backgroundColor: '#4CAF50',
-                      },
-                      {
-                        label: 'Existing NR Converted To Renewable',
-                        data: [0, newGrid.existingFossilFuelElectricity],
-                        backgroundColor: '#8BC34A',
-                      },
-                      {
-                        label: 'Electricity for Transport (TWh)',
-                        data: [0, newGrid.roadTransport ? parseFloat(newGrid.roadTransport.toFixed(2)) : 0],
-                        backgroundColor: '#CDDC39',
-                      },
-                      {
-                        label: 'Electricity for Heat (TWh)',
-                        data: [0, newGrid.heat ? parseFloat(newGrid.heat.toFixed(2)) : 0],
-                        backgroundColor: '#FFEB3B',
-                      },
-                    ],
-                  }}
+                  data={processedData}
                   options={{
                     responsive: true,
                     plugins: {
-                      legend: { display: false },
-                      datalabels: {
+                      legend: {
                         display: true,
-                        color: '#000',
-                        align: 'center',
-                        anchor: 'center',
-                        font: { weight: 'bold', size: 10 },
-                        formatter: (value, context) => {
-                          if (value > 0) {
-                            const datasetLabel = context.dataset.label;
-                            return `${datasetLabel}: ${value}`;
-                          } else {
-                            return '';
-                          }
+                        position: 'top',
+                        labels: {
+                          font: {
+                            size: 12,
+                            weight: 'bold',
+                          },
                         },
-                        clip: true,
+                      },
+                      datalabels: {
+                        display: false, // Disable data labels on the bars
                       },
                     },
                     scales: {
                       x: { stacked: true },
-                      y: {         
+                      y: {
                         stacked: true,
                         title: {
                           display: true,
-                          text: 'TWh', // Label for the y-axis
+                          text: 'TWh',
                           font: { size: 14 },
-                          color: '#000', // Optional: customize text color
-                        } 
+                          color: '#000',
+                        },
+                        ticks: {
+                          beginAtZero: true,
+                          stepSize: 10,
+                        },
+                      },
+                    },
+                    layout: {
+                      padding: {
+                        top: 20,
                       },
                     },
                   }}
-                  plugins={[ChartDataLabels]} // Ensure this plugin is used
+                  plugins={[ChartDataLabels]}
                 />
+
+
               </div>
 
               {/* Required Infrastructure */}
@@ -773,66 +835,76 @@ function App() {
                 {/* New Chart */}
                 <div>
                   <h3>Current vs Needed Capacity</h3>
-                  <Bar
-                    data={{
-                      labels: ['Wind Capacity (GW)', 'Solar Capacity (GW)'],
-                      datasets: [
-                        {
-                          label: 'Current Capacity',
-                          data: [newGrid.currentWindCapacityGW, newGrid.currentSolarCapacityGW],
-                          backgroundColor: ['#2196F3', '#FFD700'], // Light Blue for wind, Light Yellow for solar
-                          datalabels: {
-                            color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
-                            anchor: 'center',
-                            align: 'center',
-                            formatter: (value, context) =>
-                              value != null ? `Current Capacity: ${value.toFixed(2)}` : '',
-                            
-                          },
-                        },
-                        {
-                          label: 'Extra Capacity Needed',
-                          data: [newGrid.extraWindCapacityGW, newGrid.extraSolarCapacityGW],
-                          backgroundColor: ['#0D47A1', '#FFC107'], // Dark Blue for wind, Dark Yellow for solar
-                          datalabels: {
-                            color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
-                            anchor: 'center',
-                            align: 'center',
-                            formatter: (value, context) =>
-                              value != null ? `Extra Needed: ${value.toFixed(2)}` : '',
-                            
-                          },
-                        },
-                      ],
-                    }}
-                    options={{
-                      responsive: true,
-                      plugins: {
-                        legend: { display: false },
-                        datalabels: {
-                          display: true, // Enable labels for each stack section
-                          font: {
-                            weight: 'bold',
-                            size: 12,
-                          },
-                        },
-                      },
-                      scales: {
-                        x: { stacked: true }, // Enable stacked bars on x-axis
-                        y: {
-                          stacked: true, // Enable stacked bars on y-axis
-                          title: {
-                            display: true,
-                            text: 'Capacity (GW)', // Label for the y-axis
-                          },
-                          ticks: {
-                            precision: 0, // Ensure y-axis shows whole numbers
-                          },
-                        },
-                      },
-                    }}
-                    plugins={[ChartDataLabels]} // Include the DataLabels plugin
-                  />
+<Bar
+  data={{
+    labels: ['Wind Capacity (GW)', 'Solar Capacity (GW)'],
+    datasets: [
+      {
+        label: 'Current Capacity',
+        data: [newGrid.currentWindCapacityGW, newGrid.currentSolarCapacityGW],
+        backgroundColor: ['#2196F3', '#FFD700'], // Light Blue for wind, Light Yellow for solar
+        datalabels: {
+          color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
+          anchor: 'center',
+          align: 'center',
+          formatter: (value, context) => {
+          
+            const numericValue = Number(value); // Convert to a number
+            return !isNaN(numericValue)
+              ? `Current Capacity: ${numericValue.toFixed(2)}`
+              : '';
+          }
+        },
+      },
+      {
+        label: 'Extra Capacity Needed',
+        data: [newGrid.extraWindCapacityGW, newGrid.extraSolarCapacityGW],
+        backgroundColor: ['#0D47A1', '#FFC107'], // Dark Blue for wind, Dark Yellow for solar
+        datalabels: {
+          color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
+          anchor: 'center',
+          align: 'center',
+          formatter: (value, context) => {
+            const numericValue = Number(value); // Convert to a number
+
+            return !isNaN(numericValue)
+            ? `Extra Needed: ${numericValue.toFixed(2)}`
+            : '';
+          }
+        },
+      },
+    ],
+  }}
+  options={{
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        display: true, // Enable labels for each stack section
+        font: {
+          weight: 'bold',
+          size: 12,
+        },
+      },
+    },
+    scales: {
+      x: { stacked: true }, // Enable stacked bars on x-axis
+      y: {
+        stacked: true, // Enable stacked bars on y-axis
+        title: {
+          display: true,
+          text: 'Capacity (GW)', // Label for the y-axis
+        },
+        ticks: {
+          precision: 0, // Ensure y-axis shows whole numbers
+        },
+      },
+    },
+  }}
+  plugins={[ChartDataLabels]} // Include the DataLabels plugin
+/>
+
+
 
                 </div>
               </div>
@@ -842,7 +914,7 @@ function App() {
 
         </div>
         
-      )}
+    
     </div>
   );
 }
