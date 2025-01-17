@@ -1,0 +1,99 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: left;
+  display: block; /* Ensure it's a block layout */
+  position: relative; 
+}
+
+label {
+  font-size: 12px;
+}
+
+.heading-1 {
+  font-weight: bold;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.country-dropdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto 0 auto;
+}
+
+.dropdown-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.country-dropdown {
+  padding: 10px;
+  font-size: 1.1rem;
+  border: 2px solid #007BFF;
+  border-radius: 5px;
+  background-color: #F9F9F9;
+  cursor: pointer;
+}
+
+.calculate-button {
+  background-color: #007BFF; /* Bright blue */
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+.calculate-button:hover {
+  background-color: #0056b3; /* Darker blue */
+  transform: translateY(-2px); /* Subtle lift effect */
+}
+
+.calculate-button:active {
+  background-color: #003f7f; /* Even darker blue */
+  transform: translateY(0); /* Reset lift effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+}
