@@ -3,6 +3,12 @@ import React from 'react';
 function Methodology() {
   return (
     <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '5px' }}>
+      <p>
+        This app was inspired by a novel, bottom-up approach used in a paper titled 
+        "Bottom-up estimation of the scope of tasks to completely phase out fossil fuels in Finland"
+        by Simon Michaux, Tere Vadén, Janne M. Korhonen, and Jussi T. Eronen. 
+        The paper can be seen <a href="https://www.sciencedirect.com/science/article/pii/S2211467X23002110">here</a>.
+        </p>
       <h2>Methodology - References for Calculations</h2>
       <ul>
         <li>

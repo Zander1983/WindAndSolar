@@ -391,6 +391,19 @@ function App() {
           >
             ☀️
           </span>
+
+          <div
+      style={{
+        textAlign: '',
+        color: '#007BFF', // Bright blue for emphasis
+        fontSize: '0.9rem',
+        fontWeight: 'bold',
+        margin: '20px 5px',
+        maxWidth: '600px', // Optional, for a nice width
+      }}
+    >
+      This app estimates the number of wind turbines and solar panels needed to fully phase out fossil fuels in a country.
+    </div>
         </h1>
         <button
           onClick={() => setShowMethodology(!showMethodology)}
@@ -410,8 +423,13 @@ function App() {
 
       {showMethodology && <Methodology />}
 
+
+
+
+
+
       <div className="country-dropdown-container">
-        <label htmlFor="country-select" className="dropdown-label">Select Country:</label>
+        <label htmlFor="country-select" className="dropdown-label">Select Country or enter your own data for a country:</label>
         <select
           id="country-select"
           value={selectedCountry}
