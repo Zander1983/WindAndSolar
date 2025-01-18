@@ -31,6 +31,7 @@ function Methodology() {
           <p>For this example:</p>
           <pre>Number of Turbines = (6.04 × 1000) ÷ 6.6 ≈ 916 turbines</pre>
           <p>This methodology provides an estimate for infrastructure needs based on typical turbine capacity and performance.</p>
+          <p>For calculating the number of solar panels required, 400W panels were used.</p>
        </li>
         <li>
         <h2>Methodology for Heat Electrification</h2>
