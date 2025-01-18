@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import FAQ from './FAQ';
+import Methodology from './Methodology';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -48,7 +48,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('electricity'); // State to track the active tab
   const [selectedCountry, setSelectedCountry] = useState("Ireland"); // Pre-select Ireland
 
-  const [showFAQ, setShowFAQ] = useState(false); // State for showing FAQ
+  const [showMethodology, setShowMethodology] = useState(false); // State for showing Methodology
   const [newGrid, setNewGrid] = useState({}); // State for storing new grid calculation
   const [turbineCapacityMW, setTurbineCapacityMW] = useState(6.6); // Average Turbine Capacity
   const [windCapacityFactor, setWindCapacityFactor] = useState(34); // Wind Capacity Factor in %
@@ -132,6 +132,22 @@ function App() {
   const handleParameterChange = (setter, value) => {
   
     setter(value);
+  };
+
+  const Tooltip = ({ text }) => {
+    return (
+      <div className="tooltip">
+        <img
+          src="https://img.icons8.com/material-outlined/24/info.png" // Modern "info" icon
+          alt="info"
+          style={{
+            marginLeft: "5px",
+            cursor: "pointer",
+          }}
+        />
+        <span className="tooltip-text">{text}</span>
+      </div>
+    );
   };
 
   const defaultData = {
@@ -341,10 +357,43 @@ function App() {
 
   return (
     <div className="App">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 stylw={{margin: "5px"}}>Wind and Solar Calculator</h1>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '20px',
+          backgroundColor: '#F3F4F6', // Light background for the header section
+          borderBottom: '2px solid #E0E0E0', // Add a subtle border
+        }}
+      >
+        <h1
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '2.5rem',
+            color: '#007BFF', // Highlighted color
+            margin: '0',
+          }}
+        >
+          <span
+            style={{
+              marginRight: '10px',
+            }}
+          >
+            🌬️
+          </span>
+          Wind and Solar Calculator
+          <span
+            style={{
+              marginLeft: '10px',
+            }}
+          >
+            ☀️
+          </span>
+        </h1>
         <button
-          onClick={() => setShowFAQ(!showFAQ)}
+          onClick={() => setShowMethodology(!showMethodology)}
           style={{
             padding: '10px',
             backgroundColor: '#007BFF',
@@ -354,11 +403,12 @@ function App() {
             cursor: 'pointer',
           }}
         >
-          FAQ
+          Methodology
         </button>
       </div>
 
-      {showFAQ && <FAQ />}
+
+      {showMethodology && <Methodology />}
 
       <div className="country-dropdown-container">
         <label htmlFor="country-select" className="dropdown-label">Select Country:</label>
@@ -386,15 +436,88 @@ function App() {
           boxSizing: 'border-box', // Includes padding and borders in width calculations
         }}
       >
+            <div
+              style={{
+                flex: '1 1 calc(24% - 20px)', // Allows three panels per row
+                minWidth: '250px', // Reduced for better responsiveness
+                padding: '15px',
+                border: '1px solid #4CAF50', // Green border for renewable energy
+                borderRadius: '5px',
+                background: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)', // Green gradient
+                boxSizing: 'border-box',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <img
+                  src="https://img.icons8.com/fluency/48/wind-turbine.png" // Wind turbine icon
+                  alt="Renewable Electricity"
+                  style={{ marginRight: '10px' }}
+                />
+                <h3 style={{ color: '#4CAF50', margin: 0 }}>Carbon-Free Electricity
+
+                <Tooltip text="Enter the current amount of renewables and nuclear generated electricity the country produces in a year" />
+                </h3>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', alignItems: 'center', gap: '10px' }}>
+                <label style={{ textAlign: 'right', marginRight: '10px' }}>
+                  Current Carbon-Free Electricity per annum (TWh):
+                </label>
+                <input
+                  type="number"
+                  value={formData.electricity.existingCarbonFreeElectricity}
+                  onChange={(e) => handleChange(e, 'existingCarbonFreeElectricity', 'electricity')}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '5px',
+                    border: '1px solid #CCC',
+                    maxWidth: '120px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+
+                <label style={{ textAlign: 'right', marginRight: '10px' }}>
+                  Current Wind Capacity (GW):
+                </label>
+                <input
+                  type="number"
+                  value={formData.electricity.currentWindCapacityGW}
+                  onChange={(e) => handleChange(e, 'currentWindCapacityGW', 'electricity')}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '5px',
+                    border: '1px solid #CCC',
+                    maxWidth: '120px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <label style={{ textAlign: 'right', marginRight: '10px' }}>
+                  Current Solar Capacity (GW):
+                </label>
+                <input
+                  type="number"
+                  value={formData.electricity.currentSolarCapacityGW}
+                  onChange={(e) => handleChange(e, 'currentSolarCapacityGW', 'electricity')}
+                  style={{
+                    padding: '8px',
+                    borderRadius: '5px',
+                    border: '1px solid #CCC',
+                    maxWidth: '120px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+
+
         {/* Electricity Input */}
         <div
           style={{
-            flex: '1 1 calc(33% - 20px)', // Allows three panels per row
+            flex: '1 1 calc(24% - 20px)', // Allows three panels per row
             minWidth: '250px', // Reduced for better responsiveness
             padding: '15px',
-            border: '1px solid #007BFF',
+            border: '1px solid #757575', // Medium gray border for carbon-powered panels
             borderRadius: '5px',
-            backgroundColor: '#E3F2FD',
+            backgroundColor: '#F5F5F5', // Light gray background for consistency
             boxSizing: 'border-box',
           }}
         >
@@ -404,26 +527,14 @@ function App() {
               alt="Electricity"
               style={{ marginRight: '10px' }}
             />
-            <h3 style={{ color: '#007BFF', margin: 0 }}>Electricity</h3>
+            <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Electricity <Tooltip text="Enter the current amount of fossil fuel generated electricity the country produces in a year" /></h3> {/* Dark gray text */}
+
+            
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Carbon Free Electricity (TWh):
-            </label>
-            <input
-              type="number"
-              value={formData.electricity.existingCarbonFreeElectricity}
-              onChange={(e) => handleChange(e, 'existingCarbonFreeElectricity', 'electricity')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Fossil Fuel Electricity (TWh):
+          <div style={{ display: 'grid', gridTemplateColumns: '10fr 1fr', alignItems: 'center', gap: '10px' }}>
+            <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242', display: 'flex', alignItems: 'center' }}> {/* Slightly darker gray */}
+              Carbon-Powdered Electricity Per Annum (TWh):
+
             </label>
             <input
               type="number"
@@ -433,225 +544,238 @@ function App() {
                 padding: '8px',
                 borderRadius: '5px',
                 border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Current Wind Capacity (GW):
-            </label>
-            <input
-              type="number"
-              value={formData.electricity.currentWindCapacityGW}
-              onChange={(e) => handleChange(e, 'currentWindCapacityGW', 'electricity')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Current Solar Capacity (GW):
-            </label>
-            <input
-              type="number"
-              value={formData.electricity.currentSolarCapacityGW}
-              onChange={(e) => handleChange(e, 'currentSolarCapacityGW', 'electricity')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
+                maxWidth: '120px',
                 boxSizing: 'border-box',
               }}
             />
           </div>
         </div>
+
 
         {/* Heat Input */}
         <div
-          style={{
-            flex: '1 1 calc(33% - 20px)',
-            minWidth: '250px',
-            padding: '15px',
-            border: '1px solid #FF5722',
-            borderRadius: '5px',
-            backgroundColor: '#FFEBEE',
-            boxSizing: 'border-box',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-            <img
-              src="https://img.icons8.com/?size=100&id=zD-VLZTPKlpb&format=png&color=000000"
-              alt="Heat"
-              style={{ marginRight: '10px' }}
-              height="48px"
-              width="48px"
-            />
-            <h3 style={{ color: '#FF5722', margin: 0 }}>Non-renewable Heat</h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Home/Office Heating (TWh):
-            </label>
-            <input
-              type="number"
-              value={formData.heat.residentialHeat}
-              onChange={(e) => handleChange(e, 'residentialHeat', 'heat')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Industry Heat (TWh):
-            </label>
-            <input
-              type="number"
-              value={formData.heat.industryHeat}
-              onChange={(e) => handleChange(e, 'industryHeat', 'heat')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-        </div>
+  style={{
+    flex: '1 1 calc(24% - 20px)', // Allows three panels per row
+    minWidth: '250px', // Reduced for better responsiveness
+    padding: '15px',
+    border: '1px solid #757575', // Medium gray border for carbon-powered panels
+    borderRadius: '5px',
+    backgroundColor: '#F5F5F5', // Light gray background for consistency
+    boxSizing: 'border-box',
+  }}
+>
+  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+    <img
+      src="https://img.icons8.com/fluency/48/fire-element.png" // Updated fire icon
+      alt="Heat"
+      style={{ marginRight: '10px' }}
+      height="48px"
+      width="48px"
+    />
+    <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Heat
+    <Tooltip text="Enter the current amount of heat generated by fossil fuels the country uses in a year" />
+      </h3> {/* Dark gray text */}
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', alignItems: 'center', gap: '10px' }}>
+    <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242' }}> {/* Slightly darker gray */}
+      Home/Office Heating Per Annum (TWh):
+    </label>
+    <input
+      type="number"
+      value={formData.heat.residentialHeat}
+      onChange={(e) => handleChange(e, 'residentialHeat', 'heat')}
+      style={{
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #CCC',
+        maxWidth: '120px',
+        boxSizing: 'border-box',
+      }}
+    />
+    <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242' }}> {/* Slightly darker gray */}
+       Industry Heat Per Annum (TWh):
+    </label>
+    <input
+      type="number"
+      value={formData.heat.industryHeat}
+      onChange={(e) => handleChange(e, 'industryHeat', 'heat')}
+      style={{
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #CCC',
+        maxWidth: '120px',
+        boxSizing: 'border-box',
+      }}
+    />
+  </div>
+</div>
 
         {/* Rail Input */}
-        <div
-          style={{
-            flex: '1 1 calc(33% - 20px)',
-            minWidth: '250px',
-            padding: '15px',
-            border: '1px solid #FF5722',
-            borderRadius: '5px',
-            backgroundColor: '#FFF9C4',
-            boxSizing: 'border-box',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-            <img
-              width="48"
-              height="48"
-              src="https://img.icons8.com/emoji/48/high-speed-train-emoji.png"
-              alt="high-speed-train-emoji"
-            />
-            <h3 style={{ color: '#FF5722', margin: 0 }}>Rail</h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
-            <label style={{ textAlign: 'right', marginRight: '10px' }}>
-              Diesel Fuel Used (litres):
-            </label>
-            <input
-              type="number"
-              value={formData.railDiesel}
-              onChange={(e) => handleChange(e, 'railDiesel')}
-              style={{
-                padding: '8px',
-                borderRadius: '5px',
-                border: '1px solid #CCC',
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-        </div>
+        {/* <div
+  style={{
+    flex: '1 1 calc(24% - 20px)', // Allows three panels per row
+    minWidth: '250px', // Reduced for better responsiveness
+    padding: '15px',
+    border: '1px solid #757575', // Medium gray border for carbon-powered panels
+    borderRadius: '5px',
+    backgroundColor: '#F5F5F5', // Light gray background for consistency
+    boxSizing: 'border-box',
+  }}
+>
+  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+    <img
+      width="48"
+      height="48"
+      src="https://img.icons8.com/emoji/48/high-speed-train-emoji.png"
+      alt="high-speed-train"
+      style={{ marginRight: '10px' }}
+    />
+    <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Rail</h3> {/* Dark gray text 
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
+    <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242' }}> {/* Slightly darker gray }
+      Diesel Fuel Used (litres):
+    </label>
+    <input
+      type="number"
+      value={formData.railDiesel}
+      onChange={(e) => handleChange(e, 'railDiesel')}
+      style={{
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #CCC',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    />
+  </div>
+</div> */}
 
           {/* Transport Inputs */}
           <div
-          style={{
-            width: '100%', // Full width of the parent container
-            padding: '15px',
-            border: '1px solid #4CAF50',
-            borderRadius: '5px',
-            backgroundColor: '#E8F5E9',
-            boxSizing: 'border-box', // Ensures padding is included in width
-          }}
-        >
+  style={{
+    width: '100%', // Full width of the parent container
+    padding: '15px',
+    border: '1px solid #757575', // Dark gray border for industrial feel
+    borderRadius: '5px',
+    backgroundColor: '#F5F5F5', // Light gray for fossil fuel association
+    boxSizing: 'border-box', // Ensures padding is included in width
+  }}
+>
 
-          <table
-            style={{
-              width: '100%', // Full width of the roadTransport panel
-              borderCollapse: 'collapse',
-              textAlign: 'left',
-            }}
-          >
-            <thead>
-              <tr>
-                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+    <img
+      width="48"
+      height="48"
+      src="https://img.icons8.com/emoji/48/high-speed-train-emoji.png"
+      alt="high-speed-train"
+      style={{ marginRight: '10px' }}
+    />
+    <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Rail
+    <Tooltip text="Enter the current amount of litres of diesel a country uses to power its rail network in a year" />
+      </h3> {/* Dark gray text */}
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
+    <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242' }}> {/* Slightly darker gray */}
+      Diesel Fuel Used (litres):
+    </label>
+    <input
+      type="number"
+      value={formData.railDiesel}
+      onChange={(e) => handleChange(e, 'railDiesel')}
+      style={{
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #CCC',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    />
+  </div>
+
+  <table
+    style={{
+      width: '100%', // Full width of the roadTransport panel
+      borderCollapse: 'collapse',
+      textAlign: 'left',
+    }}
+  >
+    <thead>
+      <tr>
+        <th style={{ borderBottom: '2px solid #BDBDBD', padding: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
             <img
               src="https://img.icons8.com/fluency/48/car.png"
               alt="Transport"
               style={{ marginRight: '10px' }}
             />
-            <h3 style={{ color: '#4CAF50', margin: 0 }}>Road Transport</h3>
-          </div></th>
-                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Number of Vehicles</th>
-                <th style={{ borderBottom: '2px solid #CCC', padding: '10px' }}>Average Distance (km)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(formData.roadTransport).map((category) => (
-                <tr key={category}>
-                  <td style={{ padding: '10px', fontWeight: 'bold', color: '#388E3C' }}>
-                    {category === 'cars'
-                      ? 'Cars'
-                      : category === 'busesSmall'
-                      ? 'Buses Small'
-                      : category === 'busesLarge'
-                      ? 'Buses Large'
-                      : category === 'lightGoods'
-                      ? 'Light Goods Vehicles'
-                      : category === 'heavyGoods'
-                      ? 'Heavy Goods Vehicles'
-                      : category === 'tractors'
-                      ? 'Tractors'
-                      : category === 'motorcycles'
-                      ? 'Motorcycles'
-                      : category === 'other'
-                      ? 'Other Vehicles'
-                      : ''}
-                  </td>
-                  <td style={{ padding: '10px' }}>
-                    <input
-                      type="number"
-                      value={formData.roadTransport[category].numVehicles}
-                      onChange={(e) => handleChange(e, 'roadTransport', category, 'numVehicles')}
-                      style={{
-                        width: '100%',
-                        padding: '5px',
-                        borderRadius: '5px',
-                        border: '1px solid #CCC'
-                      }}
-                    />
-                  </td>
-                  <td style={{ padding: '10px' }}>
-                    <input
-                      type="number"
-                      value={formData.roadTransport[category].distance}
-                      onChange={(e) => handleChange(e, 'roadTransport', category, 'distance')}
-                      style={{
-                        width: '100%',
-                        padding: '5px',
-                        borderRadius: '5px',
-                        border: '1px solid #CCC',
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Road Transport
+            <Tooltip text="Enter the current number of vehicles in the country and the average distance each type travels in a year" />
+              </h3> {/* Dark gray text */}
+          </div>
+        </th>
+        <th style={{ borderBottom: '2px solid #BDBDBD', padding: '10px', color: '#616161' }}> {/* Dark gray text */}
+          Number of Vehicles
+        </th>
+        <th style={{ borderBottom: '2px solid #BDBDBD', padding: '10px', color: '#616161' }}> {/* Dark gray text */}
+          Average Distance (km)
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {Object.keys(formData.roadTransport).map((category) => (
+        <tr key={category}>
+          <td style={{ padding: '10px', fontWeight: 'bold', color: '#424242' }}> {/* Slightly darker gray */}
+            {category === 'cars'
+              ? 'Cars'
+              : category === 'busesSmall'
+              ? 'Buses Small'
+              : category === 'busesLarge'
+              ? 'Buses Large'
+              : category === 'lightGoods'
+              ? 'Light Goods Vehicles'
+              : category === 'heavyGoods'
+              ? 'Heavy Goods Vehicles'
+              : category === 'tractors'
+              ? 'Tractors'
+              : category === 'motorcycles'
+              ? 'Motorcycles'
+              : category === 'other'
+              ? 'Other Vehicles'
+              : ''}
+          </td>
+          <td style={{ padding: '10px' }}>
+            <input
+              type="number"
+              value={formData.roadTransport[category].numVehicles}
+              onChange={(e) => handleChange(e, 'roadTransport', category, 'numVehicles')}
+              style={{
+                width: '100%',
+                padding: '5px',
+                borderRadius: '5px',
+                border: '1px solid #BDBDBD',
+              }}
+            />
+          </td>
+          <td style={{ padding: '10px' }}>
+            <input
+              type="number"
+              value={formData.roadTransport[category].distance}
+              onChange={(e) => handleChange(e, 'roadTransport', category, 'distance')}
+              style={{
+                width: '100%',
+                padding: '5px',
+                borderRadius: '5px',
+                border: '1px solid #BDBDBD',
+              }}
+            />
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 
 
       </div>
@@ -712,6 +836,8 @@ function App() {
                   />
                 </label>
             </div>
+
+
 
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: '20px' }}>
               {/* Grid Comparison - Chart */}

@@ -97,3 +97,34 @@ label {
   transform: translateY(0); /* Reset lift effect */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow */
 }
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 200px; /* Adjust as needed */
+  background-color: #616161; /* Tooltip background */
+  color: #fff; /* Tooltip text color */
+  text-align: center;
+  border-radius: 5px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position above the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  white-space: normal;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.3s; /* Smooth fade-in effect */
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1; /* Show tooltip on hover */
+}
