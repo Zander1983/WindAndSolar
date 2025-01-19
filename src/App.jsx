@@ -856,7 +856,9 @@ function App() {
                   />
                 </label>
                 <label style={{ marginLeft: '20px' }}>
-                  Wind Capacity Factor (%) <Tooltip text="The wind capacity factor is the ratio of the actual energy output of a wind turbine over a period of time (e.g., a year) to the maximum possible energy it could produce if it operated at full capacity 100% of the time" />:
+                  Wind Capacity Factor (%) 
+                  {/* <Tooltip text="The wind capacity factor is the ratio of the actual energy output of a wind turbine over a period of time (e.g., a year) to the maximum possible energy it could produce if it operated at full capacity 100% of the time" /> */}
+                  :
                   <input
                     type="number"
                     value={windCapacityFactor}
@@ -927,19 +929,19 @@ function App() {
               <div style={{ marginTop: '20px' }}>
             <h3>Totals</h3>
             <p>
-              <strong>Existing Grid (Fossil-Free):</strong>{" "}
+              <strong>Existing Carbon-Free Grid:</strong>{" "}
               {processedData?.datasets[0]?.data[0]}
               TWh
             </p>
             <p>
-              <strong>Existing Grid:</strong>{" "}
+              <strong>Existing Grid All Sources:</strong>{" "}
               {processedData?.datasets
                 ?.reduce((acc, dataset) => acc + (dataset?.data?.[0] || 0), 0) // Sum data[0] across all datasets
                 .toFixed(2)}{" "}
               TWh
             </p>
             <p>
-              <strong>Required Grid (Fossil-Free):</strong>{" "}
+              <strong>Required Carbon-Free Grid:</strong>{" "}
               {processedData?.datasets
                 ?.reduce((acc, dataset) => acc + (dataset?.data?.[1] || 0), 0) // Sum data[1] across all datasets
                 .toFixed(2)}{" "}
