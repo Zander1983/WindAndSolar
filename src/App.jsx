@@ -259,6 +259,8 @@ function App() {
     // Constants for solar panels
     const panelCapacityKW = 0.4; // 400W panel
     const solarCapacityFactorDecimal = solarCapacityFactor / 100;
+
+    console.log(">>> solarCapacityFactorDecimal is ", solarCapacityFactorDecimal);
   
     // Calculate AEP for wind and solar
     const windTurbineAEP =
@@ -273,6 +275,8 @@ function App() {
     const windElectricity = totalElectricityToBeGreened * windSplit;
     const solarElectricity = totalElectricityToBeGreened * solarSplit;
 
+    console.log(">>>> solarElectricity is ", solarElectricity);
+
     // console.log("windElectricity is ", windElectricity);
     // console.log("solarElectricity is ", solarElectricity);
   
@@ -285,7 +289,11 @@ function App() {
   
     // Calculate the number of solar panels
     const solarElectricityKWh = solarElectricity * 1e9; // Convert TWh to kWh
+    console.log(">>> solarElectricityKWh is ", solarElectricityKWh);
     const panelOutputKWh = panelCapacityKW * solarCapacityFactorDecimal * hoursPerYear; // kWh per panel annually
+
+    console.log(">>> panelOutputKWh is ", panelOutputKWh);
+
     const numSolarPanels = Math.ceil(solarElectricityKWh / panelOutputKWh);
   
     // console.log("numSolarPanels is ", numSolarPanels);
@@ -298,7 +306,7 @@ function App() {
   };
   
   const processedData = {
-    labels: ['Existing Grid', 'New Grid (Fossil-Free)'],
+    labels: ['Existing Grid', 'Required Grid (Fossil-Free)'],
     datasets: [
       {
         label: 'Existing Renewable Electricity',
@@ -311,6 +319,16 @@ function App() {
             : 0,
         ],
         backgroundColor: '#4CAF50',
+      },
+      {
+        label: 'Existing Carbon-Powered Electricity',
+        data: [
+          newGrid.existingFossilFuelElectricity
+            ? newGrid.existingFossilFuelElectricity
+            : 0,
+            0
+        ],
+        backgroundColor: '#d1d1e0',
       },
       {
         label: 'Existing Fossil Fuel Electricity Converted To Renewable',
@@ -838,7 +856,7 @@ function App() {
                   />
                 </label>
                 <label style={{ marginLeft: '20px' }}>
-                  Wind Capacity Factor (%):
+                  Wind Capacity Factor (%) <Tooltip text="The wind capacity factor is the ratio of the actual energy output of a wind turbine over a period of time (e.g., a year) to the maximum possible energy it could produce if it operated at full capacity 100% of the time" />:
                   <input
                     type="number"
                     value={windCapacityFactor}
@@ -905,6 +923,29 @@ function App() {
                   }}
                   plugins={[ChartDataLabels]}
                 />
+             {/* Display Totals */}
+              <div style={{ marginTop: '20px' }}>
+            <h3>Totals</h3>
+            <p>
+              <strong>Existing Grid (Fossil-Free):</strong>{" "}
+              {processedData?.datasets[0]?.data[0]}
+              TWh
+            </p>
+            <p>
+              <strong>Existing Grid:</strong>{" "}
+              {processedData?.datasets
+                ?.reduce((acc, dataset) => acc + (dataset?.data?.[0] || 0), 0) // Sum data[0] across all datasets
+                .toFixed(2)}{" "}
+              TWh
+            </p>
+            <p>
+              <strong>Required Grid (Fossil-Free):</strong>{" "}
+              {processedData?.datasets
+                ?.reduce((acc, dataset) => acc + (dataset?.data?.[1] || 0), 0) // Sum data[1] across all datasets
+                .toFixed(2)}{" "}
+              TWh
+            </p>
+          </div>
 
 
               </div>
