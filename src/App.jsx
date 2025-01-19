@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Methodology from './Methodology';
+import Contact from './Contact';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -49,6 +50,7 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState("Ireland"); // Pre-select Ireland
 
   const [showMethodology, setShowMethodology] = useState(false); // State for showing Methodology
+  const [showContact, setShowContact] = useState(false); // State for showing Contact
   const [newGrid, setNewGrid] = useState({}); // State for storing new grid calculation
   const [turbineCapacityMW, setTurbineCapacityMW] = useState(6.6); // Average Turbine Capacity
   const [windCapacityFactor, setWindCapacityFactor] = useState(34); // Wind Capacity Factor in %
@@ -75,7 +77,7 @@ function App() {
     }, 0);
 
 
-    // Constants
+    // Rail
     const dieselEnergyContent = 11.9; // kWh per liter
     const dieselEngineEfficiency = 0.45; // 45% efficient
     const electricLocomotiveEfficiency = 0.73; // 73% efficient
@@ -94,7 +96,16 @@ function App() {
     // Step 5: Convert GWh to TWh
     const electricityRequiredRailTWh = electricityRequiredWithLossesGWh / 1000;
 
+    // Shipping
+    const diselInKg = formData.shippingDiesel * 0.84;
+    console.log("diselInKg is ", diselInKg);
+    const shippingTWh = diselInKg * 12.75 / 1000000000;
+    console.log("shippingTWh is ", shippingTWh);
+    const usefulWorkInTWh = shippingTWh * 0.38;
+    const kgOfHydrogenNeeded = usefulWorkInTWh * 1000000000 / 15;
+    const electricityNeededShipping = kgOfHydrogenNeeded * 52.5 / 1000000000;
 
+    console.log("electricityNeededShipping is ", electricityNeededShipping);
 
     const residentialHeat = formData.heat.residentialHeat ? parseFloat(formData.heat.residentialHeat) / 4 : 0;
     const industryHeat = formData.heat.industryHeat ? parseFloat(formData.heat.industryHeat) : 0;
@@ -105,7 +116,9 @@ function App() {
       residentialHeat +
       industryHeat +
       roadTransportTotal + 
-      electricityRequiredRailTWh;
+      electricityRequiredRailTWh +
+      electricityNeededShipping;
+
 
 
     //if (newGridSize) {
@@ -115,6 +128,7 @@ function App() {
         heat: residentialHeat + industryHeat,
         roadTransport: roadTransportTotal,
         electricityRequiredRailTWh: electricityRequiredRailTWh,
+        electricityNeededShipping: electricityNeededShipping,
         extraWindCapacityGW,
         numTurbines,
         extraSolarCapacityGW,
@@ -173,7 +187,8 @@ function App() {
         motorcycles: { numVehicles: 41471, distance: 2741, kWhPerKm: 0.11, totalElectricity: 0 },
         other: { numVehicles: 101676, distance: 20391, kWhPerKm: 0.23, totalElectricity: 0 },
       },
-      railDiesel: 43800000
+      railDiesel: 43800000,
+      shippingDiesel: 107376283
     },
   };
 
@@ -191,6 +206,14 @@ function App() {
     });
     return updatedTransport;
   };
+
+  const handleClearCountry = () => {
+    setSelectedCountry(""); // Set selected country to "No Country"
+    setFormData(initialFormData); // Reset form data to initial state
+    setNewGrid({}); // Clear the new grid
+    console.log("Country cleared");
+  };
+  
 
   //Handle country selection
   const handleCountryChange = (e) => {
@@ -361,6 +384,16 @@ function App() {
         backgroundColor: '#CDDC39',
       },
       {
+        label: 'Electricity for Shipping',
+        data: [
+          0,
+          newGrid.electricityNeededShipping
+            ? parseFloat(newGrid.electricityNeededShipping.toFixed(2))
+            : 0,
+        ],
+        backgroundColor: '#CDDC39',
+      },
+      {
         label: 'Electricity for Heat',
         data: [
           0,
@@ -375,71 +408,83 @@ function App() {
 
   return (
     <div className="App">
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '20px',
-          backgroundColor: '#F3F4F6', // Light background for the header section
-          borderBottom: '2px solid #E0E0E0', // Add a subtle border
-        }}
-      >
-        <h1
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: '2.5rem',
-            color: '#007BFF', // Highlighted color
-            margin: '0',
-          }}
-        >
-          <span
-            style={{
-              marginRight: '10px',
-            }}
-          >
-            🌬️
-          </span>
-          Wind and Solar Calculator
-          <span
-            style={{
-              marginLeft: '10px',
-            }}
-          >
-            ☀️
-          </span>
-
-          <div
+<div
+  style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '20px',
+    backgroundColor: '#F3F4F6', // Light background for the header section
+    borderBottom: '2px solid #E0E0E0', // Subtle border
+    flexWrap: 'wrap', // Allow wrapping for smaller screens
+  }}
+>
+  <div style={{ flex: '1', minWidth: '300px' }}>
+    <h1
       style={{
-        textAlign: '',
-        color: '#007BFF', // Bright blue for emphasis
-        fontSize: '0.9rem',
-        fontWeight: 'bold',
-        margin: '20px 5px',
-        maxWidth: '600px', // Optional, for a nice width
+        fontSize: '2.5rem',
+        color: '#007BFF', // Highlighted color
+        margin: '0',
       }}
     >
-      This app estimates the number of wind turbines and solar panels needed to fully phase out fossil fuels in a country.
-    </div>
-        </h1>
-        <button
-          onClick={() => setShowMethodology(!showMethodology)}
-          style={{
-            padding: '10px',
-            backgroundColor: '#007BFF',
-            color: '#FFF',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          Methodology
-        </button>
-      </div>
+      Wind and Solar Calculator
+    </h1>
+    <p
+      style={{
+        fontSize: '1rem',
+        color: '#4A4A4A', // Subtle gray for description
+        marginTop: '10px',
+        lineHeight: '1.5',
+      }}
+    >
+      This app estimates the number of wind turbines and solar panels needed to
+      fully phase out fossil fuels in a country.
+    </p>
+  </div>
+
+  <div
+    style={{
+      display: 'flex',
+      gap: '10px', // Space between buttons
+      flexWrap: 'wrap', // Allow wrapping for smaller screens
+      justifyContent: 'center',
+    }}
+  >
+    <button
+      onClick={() => setShowContact(!showContact)}
+      style={{
+        padding: '10px 20px',
+        backgroundColor: '#007BFF',
+        color: '#FFF',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '1rem',
+      }}
+    >
+      Add Your Country
+    </button>
+    <button
+      onClick={() => setShowMethodology(!showMethodology)}
+      style={{
+        padding: '10px 20px',
+        backgroundColor: '#007BFF',
+        color: '#FFF',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '1rem',
+      }}
+    >
+      Methodology
+    </button>
+  </div>
+</div>
+
 
 
       {showMethodology && <Methodology />}
+      {showContact && <Contact />}
 
 
 
@@ -447,16 +492,24 @@ function App() {
 
 
       <div className="country-dropdown-container">
-        <label htmlFor="country-select" className="dropdown-label">Select Country or enter your own data for a country:</label>
-        <select
-          id="country-select"
-          value={selectedCountry}
-          onChange={handleCountryChange}
-          className="country-dropdown"
-        >
-          <option value="Ireland">Ireland</option>
-          <option value="">No Country</option>
-        </select>
+        <label htmlFor="country-select" className="dropdown-label">
+          Select Country or enter your own data for a country:
+        </label>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <select
+            id="country-select"
+            value={selectedCountry}
+            onChange={handleCountryChange}
+            className="country-dropdown"
+          >
+            <option value="Ireland">Ireland</option>
+            <option value="">No Country</option>
+          </select>
+          {/* Add the Clear button */}
+          <button onClick={handleClearCountry} className="clear-button">
+            Clear
+          </button>
+        </div>
       </div>
 
 
@@ -569,7 +622,7 @@ function App() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '10fr 1fr', alignItems: 'center', gap: '10px' }}>
             <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242', display: 'flex', alignItems: 'center' }}> {/* Slightly darker gray */}
-              Carbon-Powdered Electricity Per Annum (TWh):
+              Carbon-Powered Electricity Per Annum (TWh):
 
             </label>
             <input
@@ -729,6 +782,32 @@ function App() {
     />
   </div>
 
+  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+
+    <img width="48" height="48" src="https://img.icons8.com/emoji/48/passenger-ship.png" alt="passenger-ship"/>
+
+    <h3 style={{ color: '#616161', margin: 0 }}>Carbon-Powered Shipping
+    <Tooltip text="Enter the current amount of litres of diesel a country uses to power its shipping fleet in a year" />
+      </h3> {/* Dark gray text */}
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', alignItems: 'center', gap: '10px' }}>
+    <label style={{ textAlign: 'right', marginRight: '10px', color: '#424242' }}> {/* Slightly darker gray */}
+      Diesel Fuel Used (litres):
+    </label>
+    <input
+      type="number"
+      value={formData.shippingDiesel}
+      onChange={(e) => handleChange(e, 'shippingDiesel')}
+      style={{
+        padding: '8px',
+        borderRadius: '5px',
+        border: '1px solid #CCC',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    />
+  </div>
+
   <table
     style={{
       width: '100%', // Full width of the roadTransport panel
@@ -810,6 +889,21 @@ function App() {
       ))}
     </tbody>
   </table>
+
+    {/* Add the note at the bottom */}
+    <div
+    style={{
+      marginTop: '20px', // Add some spacing from the content above
+      padding: '10px',
+      backgroundColor: '#FFF8E1', // Light yellow background for emphasis
+      border: '1px solid #FFC107', // Yellow border
+      borderRadius: '5px',
+      color: '#424242', // Darker gray text
+      fontStyle: 'italic', // Italic text for emphasis
+    }}
+  >
+    <strong>Note:</strong> Aviation is not considered as there is currently no technology that can replace jet fuel.
+  </div>
 </div>
 
 

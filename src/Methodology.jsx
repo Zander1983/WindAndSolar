@@ -62,6 +62,19 @@ function Methodology() {
             Electricity (TWh) = Diesel Energy (TWh) × (Diesel Efficiency ÷ Electric Efficiency) ÷ (1 - Transmission Loss)
           </p>
         </li>
+
+        <li>
+        <h2>Methodology for Shipping Electrification</h2>
+          <p>
+          Since there is no technology available yet for replacing fuel oil with EV batteries in long distance shipping, hydrogen fuel cells were used as the replacement technology in shipping.
+
+          The starting point is litres of diesel. Since i ltire of disel is 0.84kg, and assuming that for diesel (marine gas oil) the calorific content is 12.75 kWh/kg, 
+          the TWh of fuel oil used for shipping in a year is determined. 38% efficiency is applied to determine useful work in TWh. 1kg of 
+          hydrogen produces 15 kWh of electricity in a PEM hydrogen cell. To find the amount of hydrogen needed, 15kWh is divided into the TWh of useful work to give the kg of hudrogen required. 52.5 kwh of electricity is needed to produce 1 kg of hydrogen, so from this, the amount of electricity required to replace fuel oil in shipping is computed.
+          </p>
+  
+        </li>
+
         <li>
         <h2>Electric Vehicle (EV) Energy Consumption</h2>
         The following kWh/km values are used for working out the electricity required to replace fossil fuels in road transport:
