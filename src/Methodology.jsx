@@ -13,7 +13,7 @@ function Methodology() {
       <ul>
         <li>
           <h2>Methodology for Electricity</h2>
-          <p>To replace fossil fuel-based electricity generation with renewable sources such as wind and solar, the calculator estimates 
+          <p>To replace fossil fuel-based electricity generation with wind and solar, the calculator estimates 
             the required capacity and infrastructure. For instance, a country generating 20 TWh of electricity annually from fossil 
             fuels can calculate the wind turbines required as follows:</p>
        <ul>
@@ -23,7 +23,7 @@ function Methodology() {
               <li><strong>Wind turbine capacity factor:</strong> 34% (B4).</li>
           </ul>
           <p>The required wind capacity (in GW) is calculated as:</p>
-          <pre>Capacity (GW) = TWh / hours in the year * 1000 * proportio to be provided by wind / capacity factor</pre>
+          <pre>Capacity (GW) = TWh / hours in the year * 1000 * proportion to be provided by wind / capacity factor</pre>
           <p>For this example:</p>
           <pre>Capacity = 20 ÷ 8760 × 1000 ÷ 34% ≈ 6.04 GW</pre>
           <p>The number of turbines is estimated using:</p>
@@ -31,7 +31,7 @@ function Methodology() {
           <p>For this example:</p>
           <pre>Number of Turbines = (6.04 × 1000) ÷ 6.6 ≈ 916 turbines</pre>
           <p>This methodology provides an estimate for infrastructure needs based on typical turbine capacity and performance.</p>
-          <p>For calculating the number of solar panels required, 400W panels were used.</p>
+          <p>For calculating the number of solar panels required, 400W panels are used.</p>
        </li>
         <li>
         <h2>Methodology for Heat Electrification</h2>
@@ -68,9 +68,9 @@ function Methodology() {
           <p>
           Since there is no technology available yet for replacing fuel oil with EV batteries in long distance shipping, hydrogen fuel cells were used as the replacement technology in shipping.
 
-          The starting point is litres of diesel. Since i ltire of disel is 0.84kg, and assuming that for diesel (marine gas oil) the calorific content is 12.75 kWh/kg, 
+          The starting point is litres of diesel. Since 1 litre of diesel weighs 0.84kg, and assuming that for diesel (marine gas oil) the calorific content is 12.75 kWh/kg, 
           the TWh of fuel oil used for shipping in a year is determined. 38% efficiency is applied to determine useful work in TWh. 1kg of 
-          hydrogen produces 15 kWh of electricity in a PEM hydrogen cell. To find the amount of hydrogen needed, 15kWh is divided into the TWh of useful work to give the kg of hudrogen required. 52.5 kwh of electricity is needed to produce 1 kg of hydrogen, so from this, the amount of electricity required to replace fuel oil in shipping is computed.
+          hydrogen produces 15 kWh of electricity in a PEM hydrogen cell. To find the amount of hydrogen needed, 15kWh is divided into the TWh of useful work to give the kg of hydrogen required. 52.5 kwh of electricity is needed to produce 1 kg of hydrogen, so from this, the amount of electricity required to replace fuel oil in shipping is computed.
           </p>
   
         </li>
