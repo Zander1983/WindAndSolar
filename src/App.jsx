@@ -974,7 +974,7 @@ function App() {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: '20px' }}>
               {/* Grid Comparison - Chart */}
               <div style={{ flex: '5', padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                <h2>Grid Comparison</h2>
+                <h2>Grid Upgrades Needed</h2>
 
                 <Bar
                   data={processedData}
@@ -1029,16 +1029,71 @@ function App() {
             </p>
             <p>
               <strong>Existing Grid All Sources:</strong>{" "}
-              {processedData?.datasets
-                ?.reduce((acc, dataset) => acc + (dataset?.data?.[0] || 0), 0) // Sum data[0] across all datasets
-                .toFixed(2)}{" "}
+              {
+  (() => {
+    if (!processedData?.datasets) {
+      console.log("processedData or datasets is undefined or null.");
+      return "0.00"; // Return a default value if datasets are not available
+    }
+
+    const result = processedData.datasets.reduce((acc, dataset, index) => {
+      const dataValue = dataset?.data?.[0];
+      const numericValue = Number(dataValue) || 0;
+
+      console.log(`Dataset Index: ${index}`);
+      console.log(`Raw data[0] value:`, dataValue);
+      console.log(`Numeric value used in sum:`, numericValue);
+      console.log(`Accumulator before addition:`, acc);
+
+      const updatedAcc = acc + numericValue;
+
+      console.log(`Accumulator after addition:`, updatedAcc);
+      return updatedAcc;
+    }, 0);
+
+    console.log("Final result before toFixed:", result);
+
+    return result.toFixed(2);
+  })()
+}
+
               TWh
             </p>
             <p>
               <strong>Required Carbon-Free Grid:</strong>{" "}
-              {processedData?.datasets
-                ?.reduce((acc, dataset) => acc + (dataset?.data?.[1] || 0), 0) // Sum data[1] across all datasets
-                .toFixed(2)}{" "}
+
+
+
+                {
+                  (() => {
+                    if (!processedData?.datasets) {
+                      console.log("processedData or datasets is undefined or null.");
+                      return "0.00"; // Return a default value if datasets are not available
+                    }
+
+                    const result = processedData.datasets.reduce((acc, dataset, index) => {
+                      const dataValue = dataset?.data?.[1];
+                      const numericValue = Number(dataValue) || 0;
+
+                      console.log(`Dataset Index: ${index}`);
+                      console.log(`Raw data[1] value:`, dataValue);
+                      console.log(`Numeric value used in sum:`, numericValue);
+                      console.log(`Accumulator before addition:`, acc);
+
+                      const updatedAcc = acc + numericValue;
+
+                      console.log(`Accumulator after addition:`, updatedAcc);
+                      return updatedAcc;
+                    }, 0);
+
+                    console.log("Final result before toFixed:", result);
+
+                    return result.toFixed(2);
+                  })()
+                }
+
+
+
               TWh
             </p>
           </div>
