@@ -59,7 +59,6 @@ function App() {
 
  // Automatically set Ireland's data on page load
  useEffect(() => {
-  console.log("in useEffect selectedCountry");
   if (selectedCountry && defaultData[selectedCountry]) {
     setFormData((prev) => ({
       ...defaultData[selectedCountry],
@@ -71,7 +70,7 @@ function App() {
 
   // Automatic recalculation with useEffect
   useEffect(() => {
-    console.log("in big useEffect");
+  
     const roadTransportTotal = Object.values(formData.roadTransport).reduce((acc, curr) => {
       return acc + (curr.numVehicles && curr.distance ? curr.numVehicles * curr.distance * curr.kWhPerKm / 1e9 : 0);
     }, 0);
@@ -97,15 +96,13 @@ function App() {
     const electricityRequiredRailTWh = electricityRequiredWithLossesGWh / 1000;
 
     // Shipping
-    const diselInKg = formData.shippingDiesel * 0.84;
-    console.log("diselInKg is ", diselInKg);
+    const diselInKg = formData.shippingDiesel ? parseFloat(formData.shippingDiesel * 0.84) : 0;
+
     const shippingTWh = diselInKg * 12.75 / 1000000000;
-    console.log("shippingTWh is ", shippingTWh);
+
     const usefulWorkInTWh = shippingTWh * 0.38;
     const kgOfHydrogenNeeded = usefulWorkInTWh * 1000000000 / 15;
     const electricityNeededShipping = kgOfHydrogenNeeded * 52.5 / 1000000000;
-
-    console.log("electricityNeededShipping is ", electricityNeededShipping);
 
     const residentialHeat = formData.heat.residentialHeat ? parseFloat(formData.heat.residentialHeat) / 4 : 0;
     const industryHeat = formData.heat.industryHeat ? parseFloat(formData.heat.industryHeat) : 0;
@@ -211,7 +208,6 @@ function App() {
     setSelectedCountry(""); // Set selected country to "No Country"
     setFormData(initialFormData); // Reset form data to initial state
     setNewGrid({}); // Clear the new grid
-    console.log("Country cleared");
   };
   
 
@@ -219,7 +215,7 @@ function App() {
   const handleCountryChange = (e) => {
     const country = e.target.value;
     setSelectedCountry(country);
-    console.log("country is ", country);
+
     if (defaultData[country]) {
       const updatedTransport = calculateTotalElectricity(defaultData[country].roadTransport);
       setFormData({ ...defaultData[country] });
@@ -233,8 +229,7 @@ function App() {
     const handleChange = (e, category, field, subField) => {
 
       const value = e.target.value; // The new value from the input field
-      console.log("In handleChange: value = ", value, " category = ", category, " field = ", field);
-    
+
       
       setFormData((prev) => {
         if (subField) {
@@ -404,7 +399,6 @@ function App() {
     ].filter(dataset => dataset.data.some(value => value > 0)), // Include only datasets with values > 0
   };
 
-  console.log("newGrid.electricityRequiredRailTWh is ", newGrid.electricityRequiredRailTWh);
 
   return (
     <div className="App">
@@ -1030,32 +1024,28 @@ function App() {
             <p>
               <strong>Existing Grid All Sources:</strong>{" "}
               {
-  (() => {
-    if (!processedData?.datasets) {
-      console.log("processedData or datasets is undefined or null.");
-      return "0.00"; // Return a default value if datasets are not available
-    }
+                (() => {
+                  if (!processedData?.datasets) {
+             
+                    return "0.00"; // Return a default value if datasets are not available
+                  }
 
-    const result = processedData.datasets.reduce((acc, dataset, index) => {
-      const dataValue = dataset?.data?.[0];
-      const numericValue = Number(dataValue) || 0;
+                  const result = processedData.datasets.reduce((acc, dataset, index) => {
+                    const dataValue = dataset?.data?.[0];
+                    const numericValue = Number(dataValue) || 0;
 
-      console.log(`Dataset Index: ${index}`);
-      console.log(`Raw data[0] value:`, dataValue);
-      console.log(`Numeric value used in sum:`, numericValue);
-      console.log(`Accumulator before addition:`, acc);
+            
 
-      const updatedAcc = acc + numericValue;
+                    const updatedAcc = acc + numericValue;
 
-      console.log(`Accumulator after addition:`, updatedAcc);
-      return updatedAcc;
-    }, 0);
+                    return updatedAcc;
+                  }, 0);
 
-    console.log("Final result before toFixed:", result);
 
-    return result.toFixed(2);
-  })()
-}
+
+                  return result.toFixed(2);
+                })()
+              }
 
               TWh
             </p>
@@ -1067,7 +1057,7 @@ function App() {
                 {
                   (() => {
                     if (!processedData?.datasets) {
-                      console.log("processedData or datasets is undefined or null.");
+
                       return "0.00"; // Return a default value if datasets are not available
                     }
 
@@ -1075,18 +1065,12 @@ function App() {
                       const dataValue = dataset?.data?.[1];
                       const numericValue = Number(dataValue) || 0;
 
-                      console.log(`Dataset Index: ${index}`);
-                      console.log(`Raw data[1] value:`, dataValue);
-                      console.log(`Numeric value used in sum:`, numericValue);
-                      console.log(`Accumulator before addition:`, acc);
-
+        
                       const updatedAcc = acc + numericValue;
 
-                      console.log(`Accumulator after addition:`, updatedAcc);
                       return updatedAcc;
                     }, 0);
 
-                    console.log("Final result before toFixed:", result);
 
                     return result.toFixed(2);
                   })()
@@ -1160,13 +1144,6 @@ function App() {
               </div>
 
 
-                {/* {console.log('Current Wind Capacity (GW):', defaultData.Ireland.currentWindCapacityGW)}
-                {console.log('Extra Wind Capacity (GW):', newGrid.extraWindCapacityGW)}
-                {console.log('Total Wind Capacity (GW):', defaultData.Ireland.currentWindCapacityGW + newGrid.extraWindCapacityGW)}
-                {console.log('Current Solar Capacity (GW):', defaultData.Ireland.currentSolarCapacityGW)}
-                {console.log('Extra Solar Capacity (GW):', newGrid.extraSolarCapacityGW)}
-                {console.log('Total Solar Capacity (GW):', defaultData.Ireland.currentSolarCapacityGW + newGrid.extraSolarCapacityGW)}
- */}
 
                 {/* New Chart */}
                 <div>
