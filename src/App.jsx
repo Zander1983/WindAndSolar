@@ -39,7 +39,8 @@ const initialFormData = {
     motorcycles: { numVehicles: '', distance: '', kWhPerKm: 0.11, totalElectricity: 0 },
     other: { numVehicles: '', distance: '', kWhPerKm: 0.23, totalElectricity: 0 },
   },
-  railDiesel: ''
+  railDiesel: '',
+  shippingDiesel: ''
 };
 
 function App() {
@@ -349,7 +350,7 @@ function App() {
         backgroundColor: '#d1d1e0',
       },
       {
-        label: 'Existing Fossil Fuel Electricity Converted To Renewable',
+        label: 'Existing Carbon-Powered Electricity Now Converted To Renewable',
         data: [
           0,
           newGrid.existingFossilFuelElectricity
