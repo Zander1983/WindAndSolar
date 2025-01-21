@@ -23,7 +23,9 @@ const initialFormData = {
     existingCarbonFreeElectricity: '',
     existingFossilFuelElectricity: '',
     currentWindCapacityGW: '',
-    currentSolarCapacityGW: ''
+    currentSolarCapacityGW: '',
+    lowDemandGW: '',
+    lowDemandDuringDayGW: ''
   },
   heat: {
     residentialHeat: '',
@@ -57,6 +59,9 @@ function App() {
   const [windCapacityFactor, setWindCapacityFactor] = useState(34); // Wind Capacity Factor in %
   const [solarCapacityFactor, setSolarCapacityFactor] = useState(11); // Solar Capacity Factor in %
   const [windSolarRatio, setWindSolarRatio] = useState(90); // Default to 90% wind
+  const [storageDuration, setStorageDuration] = useState(1);
+  const [lakeHeightDifference, setLakeHeightDifference] = useState(150);
+  const [includeStorage, setIncludeStorage] = useState(false);
 
  // Automatically set Ireland's data on page load
  useEffect(() => {
@@ -120,7 +125,7 @@ function App() {
 
 
     //if (newGridSize) {
-      const { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels } = calculateWindAndSolar(newGridSize);
+      const { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels, volumeOfWater, totalEnergyOfNewGrid } = calculateWindAndSolar(newGridSize, formData.electricity.existingCarbonFreeElectricity, parseFloat(formData.electricity.existingFossilFuelElectricity || 0));
       setNewGrid({
         total: newGridSize,
         heat: residentialHeat + industryHeat,
@@ -134,15 +139,17 @@ function App() {
         existingCarbonFreeElectricity: formData.electricity.existingCarbonFreeElectricity,
         existingFossilFuelElectricity: formData.electricity.existingFossilFuelElectricity,
         currentWindCapacityGW: formData.electricity.currentWindCapacityGW,
-        currentSolarCapacityGW: formData.electricity.currentSolarCapacityGW,        
+        currentSolarCapacityGW: formData.electricity.currentSolarCapacityGW,   
+        volumeOfWater: volumeOfWater,
+        totalEnergyOfNewGrid: totalEnergyOfNewGrid
       });
     //}
-  }, [formData, turbineCapacityMW, windCapacityFactor, solarCapacityFactor, windSolarRatio]);
+  }, [formData, turbineCapacityMW, windCapacityFactor, solarCapacityFactor, windSolarRatio, storageDuration, includeStorage, lakeHeightDifference]);
 
 
 
   const handleParameterChange = (setter, value) => {
-  
+    
     setter(value);
   };
 
@@ -169,6 +176,8 @@ function App() {
         existingFossilFuelElectricity: 21.25,
         currentWindCapacityGW: 5.585, // Current wind capacity in GW
         currentSolarCapacityGW: 1.185, // Current solar capacity in GW
+        lowDemandGW: 2.5,
+        lowDemandDuringDayGW: 4.5
       },
       heat: {
        residentialHeat:  36.08,
@@ -187,6 +196,7 @@ function App() {
       },
       railDiesel: 43800000,
       shippingDiesel: 107376283
+      
     },
   };
 
@@ -209,6 +219,7 @@ function App() {
     setSelectedCountry(""); // Set selected country to "No Country"
     setFormData(initialFormData); // Reset form data to initial state
     setNewGrid({}); // Clear the new grid
+    setIncludeStorage(false);
   };
   
 
@@ -266,35 +277,31 @@ function App() {
     
 
   // Calculate wind and solar requirements
-  const calculateWindAndSolar = (totalElectricityToBeGreened, existingRenewableElectricity) => {
-    console.log("in calculateWindAndSolar, totalElectricityToBeGreened is ", totalElectricityToBeGreened);
-    // console.log("totalElectricity is ", totalElectricity);
+  const calculateWindAndSolar = (totalElectricityToBeGreened, existingRenewableElectricity, existingFossilFuelElectricity) => {
+
+    const totalEnergyOfNewGrid = (totalElectricityToBeGreened || 0) + parseFloat((existingRenewableElectricity || 0));
+
     const windSplit = windSolarRatio / 100; // Convert percentage to fraction
     const solarSplit = 1 - windSplit; // Complement for solar
     const hoursPerYear = 8760; // Total hours in a year
   
-    // console.log("windCapacityFactor in TWH is ", windCapacityFactor);
+
   
     // Constants for solar panels
     const panelCapacityKW = 0.4; // 400W panel
     const solarCapacityFactorDecimal = solarCapacityFactor / 100;
-
-    console.log(">>> solarCapacityFactorDecimal is ", solarCapacityFactorDecimal);
   
     // Calculate AEP for wind and solar
     const windTurbineAEP =
       (turbineCapacityMW * (windCapacityFactor / 100) * hoursPerYear) / 1000000; // in TWh per turbine
     const solarPanelAEP =
       (panelCapacityKW * solarCapacityFactorDecimal * hoursPerYear) / 1000000; // in TWh per panel
-  
-    // console.log("windTurbineAEP is ", windTurbineAEP);
-    // console.log("solarPanelAEP is ", solarPanelAEP);
+
   
     // Calculate the total electricity split
     const windElectricity = totalElectricityToBeGreened * windSplit;
     const solarElectricity = totalElectricityToBeGreened * solarSplit;
 
-    console.log(">>>> solarElectricity is ", solarElectricity);
 
     // console.log("windElectricity is ", windElectricity);
     // console.log("solarElectricity is ", solarElectricity);
@@ -302,26 +309,113 @@ function App() {
     // Calculate the number of turbines and solar MW needed
     const numTurbines = Math.ceil(windElectricity / windTurbineAEP);
     
-    const extraWindCapacityGW = (numTurbines * turbineCapacityMW) / 1000; // Convert MW to GW
+    let extraWindCapacityGW = (numTurbines * turbineCapacityMW) / 1000; // Convert MW to GW
   
     
   
     // Calculate the number of solar panels
     const solarElectricityKWh = solarElectricity * 1e9; // Convert TWh to kWh
-    console.log(">>> solarElectricityKWh is ", solarElectricityKWh);
+
     const panelOutputKWh = panelCapacityKW * solarCapacityFactorDecimal * hoursPerYear; // kWh per panel annually
 
-    console.log(">>> panelOutputKWh is ", panelOutputKWh);
 
     const numSolarPanels = Math.ceil(solarElectricityKWh / panelOutputKWh);
   
     // console.log("numSolarPanels is ", numSolarPanels);
 
-    const extraSolarCapacityGW = (numSolarPanels * panelCapacityKW / 1000000); // GW of solar capacity needed
+    let extraSolarCapacityGW = (numSolarPanels * panelCapacityKW / 1000000); // GW of solar capacity needed
 
     // console.log("extraSolarCapacityGW is ", extraSolarCapacityGW);
+
+    // calculate pumped hydro
+    let volumeOfWater = 0;
+
+    if (includeStorage) {
+
+      // windSolarRatio is defaulted to 90 i.e. 90% wind and 10% solae
+      //  code below assumes 100% wind
+      const averageHoursPerdayCanStoreWind = 8;
+      const averageHoursPerdayCanStoreSolar = 6;
+      const averagePerformanceDuringExcessProductionHoursWind = .7;
+      const averagePerformanceDuringExcessProductionHoursSolar = .5;
+      let storageNeededPerDayGWh = totalEnergyOfNewGrid/365 * 1000;
+
+      // factor in losses when going from pumped hydro to electricity
+      storageNeededPerDayGWh = storageNeededPerDayGWh/.7;
+
+      const pumpedCapacity100 = (formData.electricity.currentWindCapacityGW ?
+        formData.electricity.currentWindCapacityGW : 0) + extraWindCapacityGW;
+
+      // assume it works at 70% when storing
+      const pumpedCapacity70 = pumpedCapacity100 * averagePerformanceDuringExcessProductionHoursWind;
+
+      
+      // scale the lowDemandGW by a factor that the grid increases by
+      const projectedLowerPowerDemandAtNightGW = (formData.electricity.lowDemandGW || 0) 
+      * (totalEnergyOfNewGrid/(existingFossilFuelElectricity + existingRenewableElectricity));
+
+      const rateOfStorage = Math.max(0, pumpedCapacity70 - projectedLowerPowerDemandAtNightGW || 0);
+      const totalWindCanBeStoredPerDay = rateOfStorage * averageHoursPerdayCanStoreWind;
+
+      // solar
+      const pumpedCapacitySolar100 = (formData.electricity.currentSolarCapacityGW ?
+        formData.electricity.currentSolarCapacityGW : 0) + extraSolarCapacityGW;
+        const pumpedCapacity70Solar = pumpedCapacitySolar100 * averagePerformanceDuringExcessProductionHoursSolar;
+
+      // scale the lowDemandGW by a factor that the grid increases by
+      const projectedLowerPowerDemandDuringDayGW = (formData.electricity.lowDemandDuringDayGW || 0) 
+      * (totalEnergyOfNewGrid/(existingFossilFuelElectricity + existingRenewableElectricity));
+
+
+
+      const rateOfStorageSolar = Math.max(0, pumpedCapacity70Solar - (projectedLowerPowerDemandDuringDayGW || 0));
+
+      const totalSolarCanBeStoredPerDay = rateOfStorageSolar * averageHoursPerdayCanStoreSolar;
+
+      const windContribution = totalWindCanBeStoredPerDay/(totalWindCanBeStoredPerDay + totalSolarCanBeStoredPerDay);
+      const solarContribution = totalSolarCanBeStoredPerDay/(totalWindCanBeStoredPerDay + totalSolarCanBeStoredPerDay);
+
+
+
+
+      const windTarget = storageNeededPerDayGWh * windContribution;
+      const solarTarget = storageNeededPerDayGWh * solarContribution;
+
+ 
+
+      // percentage capcity needed to increase wind
+      const windCapacityIncreaseNeeded = (windTarget - totalWindCanBeStoredPerDay)/totalWindCanBeStoredPerDay;
+      const solarCapacityIncreaseNeeded =  (solarTarget - totalSolarCanBeStoredPerDay)/totalSolarCanBeStoredPerDay;
+
+
+      extraWindCapacityGW = extraWindCapacityGW + (extraWindCapacityGW * windCapacityIncreaseNeeded);
+ 
+
+      extraSolarCapacityGW = extraSolarCapacityGW + (extraSolarCapacityGW * (solarCapacityIncreaseNeeded || 0));
+
+      //m = E/g*h
+      const E = storageNeededPerDayGWh * (storageDuration) * 3.6 * 1000000000000;
+
+
+      const g = 9.8;
+      const h = lakeHeightDifference;
+
+      const m = E/(g + h);
+
+
+
+      volumeOfWater = Math.ceil(m/1000);
+
+
+    }
+
+
+
+
+
+    
   
-    return { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels };
+    return { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels, volumeOfWater, totalEnergyOfNewGrid };
   };
   
   const processedData = {
@@ -589,6 +683,11 @@ function App() {
                     boxSizing: 'border-box',
                   }}
                 />
+
+
+
+
+       
               </div>
             </div>
 
@@ -916,54 +1015,188 @@ function App() {
         <div>
 
           {/* Left Panel: Controls */}
-            <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
-              <h2>Controls</h2>
-              <label>
-                  Wind-Solar Ratio: {windSolarRatio}% Wind / {100 - windSolarRatio}% Solar
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={windSolarRatio}
-                    onChange={(e) => {
-                      setWindSolarRatio(Number(e.target.value));
-                      if (newGrid) {
-                        const { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels } = calculateWindAndSolar(newGrid.total);
-                        setNewGrid((prev) => ({ ...prev, extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels }));
-                      }
-                    }}
-                    style={{ width: '100%' }}
-                  />
-                </label>
+          <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '5px' }}>
+            <h2>Controls</h2>
+            
+            {/* Existing Wind-Solar Ratio Control */}
+            <label>
+              Wind-Solar Ratio: {windSolarRatio}% Wind / {100 - windSolarRatio}% Solar
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={windSolarRatio}
+                onChange={(e) => {
+                  setWindSolarRatio(Number(e.target.value));
+                  if (newGrid) {
+                    const { extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels, volumeOfWater, totalEnergyOfNewGrid } = calculateWindAndSolar(newGrid.total, formData.electricity.existingCarbonFreeElectricity, parseFloat(formData.electricity.existingFossilFuelElectricity || 0));
+                    setNewGrid((prev) => ({ ...prev, extraWindCapacityGW, numTurbines, extraSolarCapacityGW, numSolarPanels, volumeOfWater, totalEnergyOfNewGrid }));
+                  }
+                }}
+                style={{ width: '100%' }}
+              />
+            </label>
+            
+            {/* Existing Inputs */}
+            <label>
+              Average Turbine Capacity (MW):
+              <input
+                type="number"
+                value={turbineCapacityMW}
+                onChange={(e) => handleParameterChange(setTurbineCapacityMW, parseFloat(e.target.value))}
+              />
+            </label>
+            <label style={{ marginLeft: '20px' }}>
+              Wind Capacity Factor (%):
+              <input
+                type="number"
+                value={windCapacityFactor}
+                onChange={(e) => handleParameterChange(setWindCapacityFactor, parseFloat(e.target.value))}
+              />
+            </label>
+            <label style={{ marginLeft: '20px' }}>
+              Solar Capacity Factor (%):
+              <input
+                type="number"
+                value={solarCapacityFactor}
+                onChange={(e) => handleParameterChange(setSolarCapacityFactor, parseFloat(e.target.value))}
+              />
+            </label>
 
-                <label>
-                  Average Turbine Capacity (MW):
+            {/* New Controls for Storage */}
+            <div style={{ marginTop: "20px" }}>
+              {/* Storage Settings Header with Toggle */}
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                <h3 style={{ marginRight: "10px" }}>Storage Settings</h3>
+                <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: "40px",
+                      height: "20px",
+                      borderRadius: "20px",
+                      backgroundColor: includeStorage ? "#4caf50" : "#ccc",
+                      position: "relative",
+                      transition: "background-color 0.3s",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: includeStorage ? "22px" : "2px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        backgroundColor: "#fff",
+                        transition: "left 0.3s",
+                      }}
+                    ></span>
+                  </span>
                   <input
-                    type="number"
-                    value={turbineCapacityMW}
-                    onChange={(e) => handleParameterChange(setTurbineCapacityMW, parseFloat(e.target.value))}
+                    type="checkbox"
+                    checked={includeStorage}
+                    onChange={(e) => setIncludeStorage(e.target.checked)}
+                    style={{ display: "none" }}
                   />
                 </label>
-                <label style={{ marginLeft: '20px' }}>
-                  Wind Capacity Factor (%) 
-                  {/* <Tooltip text="The wind capacity factor is the ratio of the actual energy output of a wind turbine over a period of time (e.g., a year) to the maximum possible energy it could produce if it operated at full capacity 100% of the time" /> */}
-                  :
-                  <input
-                    type="number"
-                    value={windCapacityFactor}
-                    onChange={(e) => handleParameterChange(setWindCapacityFactor, parseFloat(e.target.value))}
-                  />
-                </label>
-                <label style={{ marginLeft: '20px' }}>
-                  Solar Capacity Factor (%):
-                  <input
-                    type="number"
-                    value={solarCapacityFactor}
-                    onChange={(e) => handleParameterChange(setSolarCapacityFactor, parseFloat(e.target.value))}
-                  />
-                </label>
+              </div>
+
+              {/* Conditional Storage Settings */}
+              {includeStorage && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "30px", fontSize: "1rem" }}>
+                  {/* Power Demand Inputs */}
+                  <fieldset style={{ border: "1px solid #CCC", borderRadius: "5px", padding: "15px" }}>
+                    <legend style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Power Demand</legend>
+                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                      <label>
+                        Typical Current Low Power Demand At Night (GW):
+                        <input
+                          type="number"
+                          value={formData.electricity.lowDemandGW}
+                          onChange={(e) => handleChange(e, 'lowDemandGW', 'electricity')}
+                          style={{
+                            padding: "8px",
+                            marginLeft: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #CCC",
+                            maxWidth: "120px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </label>
+                      <label>
+                        Typical Current Low Power Demand During Day (GW):
+                        <input
+                          type="number"
+                          value={formData.electricity.lowDemandDuringDayGW}
+                          onChange={(e) => handleChange(e, 'lowDemandDuringDayGW', 'electricity')}
+                          style={{
+                            padding: "8px",
+                            marginLeft: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #CCC",
+                            maxWidth: "120px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </fieldset>
+
+                  {/* Storage Duration */}
+                  <fieldset style={{ border: "1px solid #CCC", borderRadius: "5px", padding: "15px" }}>
+                    <legend style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Storage Duration</legend>
+                    <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                      {["1", "3", "7", "14", "28"].map((day) => (
+                        <label key={day}>
+                          <input
+                            type="radio"
+                            name="storageDuration"
+                            value={day}
+                            checked={storageDuration === Number(day)}
+                            onChange={(e) => setStorageDuration(Number(e.target.value))}
+                            style={{ marginRight: "5px" }}
+                          />
+                          {day} Day{Number(day) > 1 ? "s" : ""}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  {/* Height Input */}
+                  <fieldset style={{ border: "1px solid #CCC", borderRadius: "5px", padding: "15px" }}>
+                    <legend style={{ fontWeight: "bold", fontSize: "1.1rem" }}>Lake Specifications</legend>
+                    <label>
+                      Height Between Upper and Lower Lake (m):
+                      <input
+                        type="number"
+                        value={lakeHeightDifference}
+                        onChange={(e) =>
+                          setLakeHeightDifference(parseFloat(e.target.value))
+                        }
+                        style={{
+                          padding: "8px",
+                          marginLeft: "10px",
+                          borderRadius: "5px",
+                          border: "1px solid #CCC",
+                          maxWidth: "120px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </label>
+                  </fieldset>
+                </div>
+
+
+              )}
             </div>
 
+         
+         
+         
+         
+          </div>
 
 
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: '20px' }}>
@@ -1015,72 +1248,108 @@ function App() {
                   plugins={[ChartDataLabels]}
                 />
              {/* Display Totals */}
-              <div style={{ marginTop: '20px' }}>
-            <h3>Totals</h3>
-            <p>
-              <strong>Existing Carbon-Free Grid:</strong>{" "}
-              {processedData?.datasets[0]?.data[0]}
-              TWh
-            </p>
-            <p>
-              <strong>Existing Grid All Sources:</strong>{" "}
-              {
-                (() => {
-                  if (!processedData?.datasets) {
-             
-                    return "0.00"; // Return a default value if datasets are not available
+              <div style={{ marginTop: '5px' }}>
+                <p>
+                  <strong>Existing Carbon-Free Grid:</strong>{" "}
+                  {processedData?.datasets[0]?.data[0]}
+                  TWh
+                </p>
+                <p>
+                  <strong>Existing Grid All Sources:</strong>{" "}
+                  {
+                    (() => {
+                      if (!processedData?.datasets) {
+                
+                        return "0.00"; // Return a default value if datasets are not available
+                      }
+
+                      const result = processedData.datasets.reduce((acc, dataset, index) => {
+                        const dataValue = dataset?.data?.[0];
+                        const numericValue = Number(dataValue) || 0;
+
+                
+
+                        const updatedAcc = acc + numericValue;
+
+                        return updatedAcc;
+                      }, 0);
+
+
+
+                      return result.toFixed(2);
+                    })()
                   }
 
-                  const result = processedData.datasets.reduce((acc, dataset, index) => {
-                    const dataValue = dataset?.data?.[0];
-                    const numericValue = Number(dataValue) || 0;
+                  TWh
+                </p>
+                <p>
+                  <strong>Required Carbon-Free Grid:</strong>{" "}
+                    {
+                      (() => {
+                        if (!processedData?.datasets) {
+
+                          return "0.00"; // Return a default value if datasets are not available
+                        }
+
+                        const result = processedData.datasets.reduce((acc, dataset, index) => {
+                          const dataValue = dataset?.data?.[1];
+                          const numericValue = Number(dataValue) || 0;
 
             
+                          const updatedAcc = acc + numericValue;
 
-                    const updatedAcc = acc + numericValue;
-
-                    return updatedAcc;
-                  }, 0);
-
+                          return updatedAcc;
+                        }, 0);
 
 
-                  return result.toFixed(2);
-                })()
-              }
-
-              TWh
-            </p>
-            <p>
-              <strong>Required Carbon-Free Grid:</strong>{" "}
-
-
-
-                {
-                  (() => {
-                    if (!processedData?.datasets) {
-
-                      return "0.00"; // Return a default value if datasets are not available
+                        return result.toFixed(2);
+                      })()
                     }
 
-                    const result = processedData.datasets.reduce((acc, dataset, index) => {
-                      const dataValue = dataset?.data?.[1];
-                      const numericValue = Number(dataValue) || 0;
-
-        
-                      const updatedAcc = acc + numericValue;
-
-                      return updatedAcc;
-                    }, 0);
 
 
-                    return result.toFixed(2);
-                  })()
-                }
+                  TWh
+                </p>
 
+                {includeStorage && (
+                  <div>
+                    <h2>Pumped Hydro</h2>
 
+                    <div style={{ textAlign: 'left', 
+                      fontFamily: 'Arial, sans-serif',
+                       padding: '20px', 
+                       backgroundColor: '#e0f7fa',
+                       border: "1px solid #b3d9ff"
+                       
+                       }}>
+                    {/* Icon */}
+                    <div style={{ marginBottom: '15px' }}>
+                      <span role="img" aria-label="dam" style={{ fontSize: '48px', color: '#0288d1' }}>💦 </span>
+                    </div>
 
-              TWh
-            </p>
+                    <p style={{ fontSize: '1.2em', color: '#333', margin: '10px 0' }}>
+                      Consumption per day (GWh): {((newGrid.totalEnergyOfNewGrid || 0)/365 * 1000).toFixed(2)}
+                    </p>
+
+                    {/* Storage Information */}
+                    <p style={{ fontSize: '1.2em', color: '#333', margin: '10px 0' }}>
+                    <strong>{newGrid?.volumeOfWater?.toLocaleString()} cubic metres</strong> of water stored at a height difference 
+                    of 
+                    <span style={{ color: '#007BFF', fontWeight: 'bold' }}> {lakeHeightDifference}m </span> 
+                    are needed for 
+                    <span style={{ color: '#007BFF', fontWeight: 'bold' }}> {storageDuration} day{storageDuration > 1 ? 's' : ''}</span> worth of storage.
+                    <br />
+                    This volume is approximately {' '}
+                    <span style={{ color: '#007BFF', fontWeight: 'bold' }}>
+                        {(newGrid?.volumeOfWater / 7452000000).toFixed(2)}%
+                    </span> 
+                    {' '} of the volume of Loch Ness, the largest lake in Great Britain by volume.
+                  </p>
+
+                  </div>
+              </div>
+            )}
+
           </div>
 
 
@@ -1149,74 +1418,74 @@ function App() {
                 {/* New Chart */}
                 <div>
                   <h3>Current vs Needed Capacity</h3>
-<Bar
-  data={{
-    labels: ['Wind Capacity (GW)', 'Solar Capacity (GW)'],
-    datasets: [
-      {
-        label: 'Current Capacity',
-        data: [newGrid.currentWindCapacityGW, newGrid.currentSolarCapacityGW],
-        backgroundColor: ['#2196F3', '#FFD700'], // Light Blue for wind, Light Yellow for solar
-        datalabels: {
-          color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
-          anchor: 'center',
-          align: 'center',
-          formatter: (value, context) => {
-          
-            const numericValue = Number(value); // Convert to a number
-            return !isNaN(numericValue)
-              ? `Current Capacity: ${numericValue.toFixed(2)}`
-              : '';
-          }
-        },
-      },
-      {
-        label: 'Extra Capacity Needed',
-        data: [newGrid.extraWindCapacityGW, newGrid.extraSolarCapacityGW],
-        backgroundColor: ['#0D47A1', '#FFC107'], // Dark Blue for wind, Dark Yellow for solar
-        datalabels: {
-          color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
-          anchor: 'center',
-          align: 'center',
-          formatter: (value, context) => {
-            const numericValue = Number(value); // Convert to a number
+                  <Bar
+                    data={{
+                      labels: ['Wind Capacity (GW)', 'Solar Capacity (GW)'],
+                      datasets: [
+                        {
+                          label: 'Current Capacity',
+                          data: [newGrid.currentWindCapacityGW, newGrid.currentSolarCapacityGW],
+                          backgroundColor: ['#2196F3', '#FFD700'], // Light Blue for wind, Light Yellow for solar
+                          datalabels: {
+                            color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
+                            anchor: 'center',
+                            align: 'center',
+                            formatter: (value, context) => {
+                            
+                              const numericValue = Number(value); // Convert to a number
+                              return !isNaN(numericValue)
+                                ? `Current Capacity: ${numericValue.toFixed(2)}`
+                                : '';
+                            }
+                          },
+                        },
+                        {
+                          label: 'Extra Capacity Needed',
+                          data: [newGrid.extraWindCapacityGW, newGrid.extraSolarCapacityGW],
+                          backgroundColor: ['#0D47A1', '#FFC107'], // Dark Blue for wind, Dark Yellow for solar
+                          datalabels: {
+                            color: ['#FFFFFF', '#000000'], // White text for Wind, Black text for Solar
+                            anchor: 'center',
+                            align: 'center',
+                            formatter: (value, context) => {
+                              const numericValue = Number(value); // Convert to a number
 
-            return !isNaN(numericValue)
-            ? `Extra Needed: ${numericValue.toFixed(2)}`
-            : '';
-          }
-        },
-      },
-    ],
-  }}
-  options={{
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      datalabels: {
-        display: true, // Enable labels for each stack section
-        font: {
-          weight: 'bold',
-          size: 12,
-        },
-      },
-    },
-    scales: {
-      x: { stacked: true }, // Enable stacked bars on x-axis
-      y: {
-        stacked: true, // Enable stacked bars on y-axis
-        title: {
-          display: true,
-          text: 'Capacity (GW)', // Label for the y-axis
-        },
-        ticks: {
-          precision: 0, // Ensure y-axis shows whole numbers
-        },
-      },
-    },
-  }}
-  plugins={[ChartDataLabels]} // Include the DataLabels plugin
-/>
+                              return !isNaN(numericValue)
+                              ? `Extra Needed: ${numericValue.toFixed(2)}`
+                              : '';
+                            }
+                          },
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                          display: true, // Enable labels for each stack section
+                          font: {
+                            weight: 'bold',
+                            size: 12,
+                          },
+                        },
+                      },
+                      scales: {
+                        x: { stacked: true }, // Enable stacked bars on x-axis
+                        y: {
+                          stacked: true, // Enable stacked bars on y-axis
+                          title: {
+                            display: true,
+                            text: 'Capacity (GW)', // Label for the y-axis
+                          },
+                          ticks: {
+                            precision: 0, // Ensure y-axis shows whole numbers
+                          },
+                        },
+                      },
+                    }}
+                    plugins={[ChartDataLabels]} // Include the DataLabels plugin
+                  />
 
 
 

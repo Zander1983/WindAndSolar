@@ -142,6 +142,85 @@ function Methodology() {
 
 
         </li>
+
+        <li>
+
+
+        <h2>Methodology for Pumped Storage</h2>
+        <ul>
+
+  <li>
+    <strong>Storage Needed per Day:</strong>
+    <p>
+      The total energy demand of the new grid is divided by 365 (days in a year) to calculate the energy that needs to be stored per day. 
+      This value is adjusted for energy losses during conversion from pumped hydro storage to electricity, assuming a 70% efficiency.
+    </p>
+  </li>
+
+  <li>
+    <strong>Wind Storage Capacity:</strong>
+    <p>
+      The current wind capacity is combined with any additional wind capacity added to the grid. It is assumed that the wind energy system operates at 
+      70% efficiency during hours of excess production. The projected lower power demand at night (scaled to match the expected increase in grid size) 
+      is subtracted from this capacity to determine the amount of wind energy that can be stored daily. The calculation assumes that wind energy can be stored for 8 hours per day.
+    </p>
+  </li>
+
+  <li>
+    <strong>Solar Storage Capacity:</strong>
+    <p>
+      The current solar capacity is combined with any additional solar capacity added to the grid. It is assumed that the solar energy system operates at 
+      50% efficiency during hours of excess production. The projected lower power demand during the day (scaled to match the expected increase in grid size) 
+      is subtracted from this capacity to determine the amount of solar energy that can be stored daily. The calculation assumes that solar energy can be stored for 6 hours per day.
+    </p>
+  </li>
+
+  <li>
+    <strong>Proportion of Wind and Solar Contributions:</strong>
+    <p>
+      The proportion of wind and solar energy contributing to the storage requirement is calculated based on the daily storage capacities of wind and solar. 
+      The total energy storage requirement is then divided proportionally between wind and solar contributions.
+    </p>
+  </li>
+
+  <li>
+    <strong>Capacity Increases Needed:</strong>
+    <p>
+      The additional capacity required for wind and solar is calculated by comparing the current storage capacity to the target storage requirement. 
+      The percentage increase needed for wind and solar capacity is determined, and these percentages are applied to the extra capacity to meet the targets.
+    </p>
+  </li>
+
+  <li>
+    <strong>Energy Stored as Potential Energy:</strong>
+    <p>
+      The total energy to be stored is converted to joules. Using the gravitational potential energy formula, the mass of water needed for storage is calculated:
+    </p>
+    <pre>m = E / (g × h)</pre>
+    <ul>
+      <li>E = energy to be stored (in joules)</li>
+      <li>g = 9.8 m/s² (acceleration due to gravity)</li>
+      <li>h = height difference between the upper and lower reservoirs (in meters)</li>
+    </ul>
+  </li>
+
+  <li>
+    <strong>Volume of Water:</strong>
+    <p>
+      The volume of water is calculated from the mass, assuming a density of 1,000 kg per cubic meter:
+    </p>
+    <pre>volumeOfWater = m / 1000</pre>
+    <p>
+      The final result is rounded up to the nearest cubic meter to ensure sufficient storage.
+    </p>
+  </li>
+</ul>
+
+
+        </li>
+
+ 
+
       </ul>
     </div>
 
