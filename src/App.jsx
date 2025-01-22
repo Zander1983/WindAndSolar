@@ -1317,23 +1317,23 @@ function App() {
 
                     <div style={{ textAlign: 'left', 
                       fontFamily: 'Arial, sans-serif',
-                       padding: '20px', 
+                       padding: '10px', 
                        backgroundColor: '#e0f7fa',
                        border: "1px solid #b3d9ff"
                        
                        }}>
                     {/* Icon */}
-                    <div style={{ marginBottom: '15px' }}>
-                      <span role="img" aria-label="dam" style={{ fontSize: '48px', color: '#0288d1' }}>💦 </span>
+                    <div style={{ marginBottom: '5px', textAlign:"center" }}>
+                      <span role="img" aria-label="dam"  style={{ fontSize: '48px', color: '#0288d1' }}>💦 </span>
                     </div>
 
-                    <p style={{ fontSize: '1.2em', color: '#333', margin: '10px 0' }}>
-                      Consumption per day (GWh): {((newGrid.totalEnergyOfNewGrid || 0)/365 * 1000).toFixed(2)}
+                    <p style={{ fontSize: '1.0em', color: '#333', margin: '10px 0' }}>
+                      Consumption per day with Required Grid (GWh): {((newGrid.totalEnergyOfNewGrid || 0)/365 * 1000).toFixed(2)}
                     </p>
 
                     {/* Storage Information */}
-                    <p style={{ fontSize: '1.2em', color: '#333', margin: '10px 0' }}>
-                    <strong>{newGrid?.volumeOfWater?.toLocaleString()} cubic metres</strong> of water stored at a height difference 
+                    <p style={{ fontSize: '1.0em', color: '#333', margin: '10px 0' }}>
+                    <span style={{ color: '#007BFF', fontWeight: 'bold' }}>{newGrid?.volumeOfWater?.toLocaleString()} cubic metres</span> of water stored at a height difference 
                     of 
                     <span style={{ color: '#007BFF', fontWeight: 'bold' }}> {lakeHeightDifference}m </span> 
                     are needed for 
