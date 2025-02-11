@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import Methodology from "./Methodology";
+import Contribute from "./Contribute";
 import Contact from "./Contact";
 import { Bar } from "react-chartjs-2";
 import {
@@ -114,6 +115,8 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState("Ireland"); // Pre-select Ireland
 
   const [showMethodology, setShowMethodology] = useState(false); // State for showing Methodology
+  const [showContribute, setShowContribute] = useState(false); // State for showing Contribute
+  ///Contribute
   const [showContact, setShowContact] = useState(false); // State for showing Contact
   const [newGrid, setNewGrid] = useState({}); // State for storing new grid calculation
   const [turbineCapacityMW, setTurbineCapacityMW] = useState(6.6); // Average Turbine Capacity
@@ -855,11 +858,26 @@ function App() {
           >
             Methodology
           </button>
+          <button
+            onClick={() => setShowContribute(!showContribute)}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#007BFF",
+              color: "#FFF",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+          >
+            Contribute
+          </button>
         </div>
       </div>
 
       {showMethodology && <Methodology />}
       {showContact && <Contact />}
+      {showContribute && <Contribute />}
 
       <div className="country-dropdown-container">
         <label htmlFor="country-select" className="dropdown-label">
