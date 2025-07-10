@@ -1546,6 +1546,27 @@ function App() {
                   boxSizing: "border-box",
                 }}
               />
+
+              <label style={{ textAlign: "left" }}>
+                Wind Share of New Renewables (%):
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={windSolarRatio}
+                onChange={(e) =>
+                  handleParameterChange(setWindSolarRatio, parseFloat(e.target.value))
+                }
+                style={{
+                  padding: "8px",
+                  borderRadius: "5px",
+                  border: "1px solid #CCC",
+                  width: "100%",
+                  boxSizing: "border-box",
+                }}
+              />
+              
             </div>
           </div>
 
