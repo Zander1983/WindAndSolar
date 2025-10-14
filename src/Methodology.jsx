@@ -77,18 +77,104 @@ function Methodology() {
 
         <li>
         <h2>Electric Vehicle (EV) Energy Consumption</h2>
-        The following kWh/km values are used for working out the electricity required to replace fossil fuels in road transport:
-        <ul>
-            <li>Cars: 0.19</li>
-            <li>Small buses: 0.23</li>
-            <li>Large buses: 4.63 (hydrogen fuel cell)</li>
-            <li>Light Goods Vehicles: 0.23</li>
-            <li>Heavy Goods Vehicles: 4.63 (hydrogen fuel cell)</li>
-            <li>Tractors: 4.63 (hydrogen fuel cell)</li>
-            <li>Motorcycles: 0.11</li>
-            <li>Other vehicles: 0.23</li>
-        </ul>
 
+        <table border="1" cellspacing="0" cellpadding="6">
+          <thead>
+            <tr>
+              <th>Vehicle category</th>
+              <th>kWh/km</th>
+              <th>Emissions (g CO₂/km)</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cars</td>
+              <td>0.19</td>
+              <td>168</td>
+              <td>EV Database, 2024; Suarez et al, 2025</td>
+            </tr>
+            <tr>
+              <td>Buses (small)</td>
+              <td>0.23</td>
+              <td>180.8</td>
+              <td>EV Database, 2024; European Environment Agency, 2025</td>
+            </tr>
+            <tr>
+              <td>Buses (large)</td>
+              <td>5.19</td>
+              <td>822</td>
+              <td>Authors’ calc; Carbon Independent, 2025a</td>
+            </tr>
+            <tr>
+              <td>Light Goods Vehicles</td>
+              <td>0.23</td>
+              <td>180.8</td>
+              <td>EV Database, 2024; assume same as small buses</td>
+            </tr>
+            <tr>
+              <td>Heavy Goods Vehicles</td>
+              <td>5.19</td>
+              <td>900</td>
+              <td>Authors’ calc; 57 g CO₂/t-km × 16 t (Ragon &amp; Rodriguez, 2021)</td>
+            </tr>
+            <tr>
+              <td>Tractors</td>
+              <td>5.19</td>
+              <td>900</td>
+              <td>Authors’ calc; assume same as HGV</td>
+            </tr>
+            <tr>
+              <td>Motorcycles</td>
+              <td>0.11</td>
+              <td>46.5</td>
+              <td>EV Database, 2024; Gantina et al, 2024</td>
+            </tr>
+            <tr>
+              <td>Other Vehicles</td>
+              <td>0.23</td>
+              <td>180.8</td>
+              <td>EV Database, 2024; assume same as LGV</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <br />
+
+          <table border="1" cellspacing="0" cellpadding="6">
+            <thead>
+              <tr>
+                <th>Type</th>
+      
+                <th>Emissions (g CO₂/km)</th>
+         
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gas for electricity</td>
+                <td>450 (California Air Resources Board, 2024)</td>
+       
+              </tr>
+              <tr>
+                <td>Coal for electricity</td>
+                <td>975 (Xia, 2013)</td>
+
+              </tr>
+              <tr>
+                <td>Gas for heat</td>
+                <td>185 (EEA Grants)</td>
+
+              </tr>
+
+              <tr>
+              <td>Diesel combustion</td>
+              <td>2,620 (Kawamoto et al, 2019)</td>              
+              </tr>
+        
+      
+            </tbody>
+          </table>
 
     <h2>Hydrogen Fuel Cell Energy Consumption</h2>
     <p>
@@ -127,7 +213,7 @@ function Methodology() {
               <tr>
                   <td>kWh / km</td>
                   <td></td>
-                  <td>4.63155</td>
+                  <td>5.19155</td>
               </tr>
           </tbody>
       </table>
@@ -149,77 +235,117 @@ function Methodology() {
         <h2>Methodology for Pumped Storage</h2>
         <ul>
 
-  <li>
-    <strong>Storage Needed per Day:</strong>
-    <p>
-      The total energy demand of the new grid is divided by 365 (days in a year) to calculate the energy that needs to be stored per day. 
-      This value is adjusted for energy losses during conversion from pumped hydro storage to electricity, assuming a 70% efficiency.
-    </p>
-  </li>
+        <li>
+          <strong>Storage Needed per Day:</strong>
+          <p>
+            The total energy demand of the new grid is divided by 365 (days in a year) to calculate the energy that needs to be stored per day. 
+            This value is adjusted for energy losses during conversion from pumped hydro storage to electricity, assuming a 70% efficiency.
+          </p>
+        </li>
 
-  <li>
-    <strong>Wind Storage Capacity:</strong>
-    <p>
-      The current wind capacity is combined with any additional wind capacity added to the grid. It is assumed that the wind energy system operates at 
-      70% efficiency during hours of excess production. The projected lower power demand at night (scaled to match the expected increase in grid size) 
-      is subtracted from this capacity to determine the amount of wind energy that can be stored daily. The calculation assumes that wind energy can be stored for 8 hours per day.
-    </p>
-  </li>
+        <li>
+          <strong>Wind Storage Capacity:</strong>
+          <p>
+            The current wind capacity is combined with any additional wind capacity added to the grid. It is assumed that the wind energy system operates at 
+            70% efficiency during hours of excess production. The projected lower power demand at night (scaled to match the expected increase in grid size) 
+            is subtracted from this capacity to determine the amount of wind energy that can be stored daily. The calculation assumes that wind energy can be stored for 8 hours per day.
+          </p>
+        </li>
 
-  <li>
-    <strong>Solar Storage Capacity:</strong>
-    <p>
-      The current solar capacity is combined with any additional solar capacity added to the grid. It is assumed that the solar energy system operates at 
-      50% efficiency during hours of excess production. The projected lower power demand during the day (scaled to match the expected increase in grid size) 
-      is subtracted from this capacity to determine the amount of solar energy that can be stored daily. The calculation assumes that solar energy can be stored for 6 hours per day.
-    </p>
-  </li>
+        <li>
+          <strong>Solar Storage Capacity:</strong>
+          <p>
+            The current solar capacity is combined with any additional solar capacity added to the grid. It is assumed that the solar energy system operates at 
+            50% efficiency during hours of excess production. The projected lower power demand during the day (scaled to match the expected increase in grid size) 
+            is subtracted from this capacity to determine the amount of solar energy that can be stored daily. The calculation assumes that solar energy can be stored for 6 hours per day.
+          </p>
+        </li>
 
-  <li>
-    <strong>Proportion of Wind and Solar Contributions:</strong>
-    <p>
-      The proportion of wind and solar energy contributing to the storage requirement is calculated based on the daily storage capacities of wind and solar. 
-      The total energy storage requirement is then divided proportionally between wind and solar contributions.
-    </p>
-  </li>
+        <li>
+          <strong>Proportion of Wind and Solar Contributions:</strong>
+          <p>
+            The proportion of wind and solar energy contributing to the storage requirement is calculated based on the daily storage capacities of wind and solar. 
+            The total energy storage requirement is then divided proportionally between wind and solar contributions.
+          </p>
+        </li>
 
-  <li>
-    <strong>Capacity Increases Needed:</strong>
-    <p>
-      The additional capacity required for wind and solar is calculated by comparing the current storage capacity to the target storage requirement. 
-      The percentage increase needed for wind and solar capacity is determined, and these percentages are applied to the extra capacity to meet the targets.
-    </p>
-  </li>
+        <li>
+          <strong>Capacity Increases Needed:</strong>
+          <p>
+            The additional capacity required for wind and solar is calculated by comparing the current storage capacity to the target storage requirement. 
+            The percentage increase needed for wind and solar capacity is determined, and these percentages are applied to the extra capacity to meet the targets.
+          </p>
+        </li>
 
-  <li>
-    <strong>Energy Stored as Potential Energy:</strong>
-    <p>
-      The total energy to be stored is converted to joules. Using the gravitational potential energy formula, the mass of water needed for storage is calculated:
-    </p>
-    <pre>m = E / (g × h)</pre>
-    <ul>
-      <li>E = energy to be stored (in joules)</li>
-      <li>g = 9.8 m/s² (acceleration due to gravity)</li>
-      <li>h = height difference between the upper and lower reservoirs (in meters)</li>
-    </ul>
-  </li>
+        <li>
+          <strong>Energy Stored as Potential Energy:</strong>
+          <p>
+            The total energy to be stored is converted to joules. Using the gravitational potential energy formula, the mass of water needed for storage is calculated:
+          </p>
+          <pre>m = E / (g × h)</pre>
+          <ul>
+            <li>E = energy to be stored (in joules)</li>
+            <li>g = 9.8 m/s² (acceleration due to gravity)</li>
+            <li>h = height difference between the upper and lower reservoirs (in meters)</li>
+          </ul>
+        </li>
 
-  <li>
-    <strong>Volume of Water:</strong>
-    <p>
-      The volume of water is calculated from the mass, assuming a density of 1,000 kg per cubic meter:
-    </p>
-    <pre>volumeOfWater = m / 1000</pre>
-    <p>
-      The final result is rounded up to the nearest cubic meter to ensure sufficient storage.
-    </p>
-  </li>
-</ul>
+        <li>
+          <strong>Volume of Water:</strong>
+          <p>
+            The volume of water is calculated from the mass, assuming a density of 1,000 kg per cubic meter:
+          </p>
+          <pre>volumeOfWater = m / 1000</pre>
+          <p>
+            The final result is rounded up to the nearest cubic meter to ensure sufficient storage.
+          </p>
+        </li>
+      </ul>
 
 
         </li>
 
  
+
+      </ul>
+
+      <ul>
+      <li>
+      Carbon Independent (2025a) Emissions from bus travel. Available at: https://www.carbonindependent.org/20.html 
+      </li>
+
+      <li>
+        Suarez, J., Tansini, A., Ktistakis, M.A., Marin, A.L., Komnos, D., Pavlovic, J. & Fontaras, G. (2025) ‘Towards zero CO₂ emissions: Insights from EU vehicle on-board data’, Science of The Total Environment, 1001, p.180454. doi:10.1016/j.scitotenv.2025.180454.
+      </li>
+
+      <li>
+      European Environment Agency (2025) CO₂ performance — emissions of new passenger cars and vans. Available at: https://www.eea.europa.eu/en/analysis/indicators/co2-performance-emissions-of-new 
+      </li>
+
+      <li>
+      Ragon, PL & Rodriguez, F. (2021). CO2 emissions from trucks in the EU: An analysis of the heavy-duty CO2 standards baseline data. Available at: https://www.researchgate.net/publication/355046265_CO2_emissions_from_trucks_in_the_EU_An_analysis_of_the_heavy-duty_CO2_standards_baseline_data 
+      </li>
+
+      <li>
+        Gantina, T.M., Lestari, P., Arrohman, M.K., Mahalana, A. and Dallmann, T. (2024) Measurement of motorcycle exhaust emissions on urban roads using remote sensing. E3S Web of Conferences, 15, 06009. Available at: https://www.e3s-conferences.org/articles/e3sconf/pdf/2024/15/e3sconf_etmc2024_06009.pdf
+      </li>
+
+      <li>
+EEA Grants, Conversion Guidelines – Greenhouse gas emissions, (n.d.), “1 MWh from gas fired power plant = 185 kg CO₂”, viewed DD Month YYYY, https://www.eeagrants.gov.pt/media/2776/conversion-guidelines.pdf
+
+      </li>
+
+      <li>
+California Air Resources Board (2024) Low Carbon Fuel Standard Annual Updates to Lookup Table Pathways. “Electricity generation emission factor = 450 gCO₂e/kWh (Weighted average emissions factor of each NG combustion type).” Available at: https://ww2.arb.ca.gov/sites/default/files/classic/fuels/lcfs/fuelpathways/comments/2024_elec_update.pdf
+      </li>
+
+      <li>
+Xia, M., et al. (2013) ‘Carbon emission coefficient measurement of the coal-to-power chain in China’, Applied Energy, 103, pp. 606–613.
+      </li>
+
+      <li>
+Kawamoto, R., Mochizuki, H., Moriguchi, Y., Nakano, T., Motohashi, M., Sakai, Y., & Inaba, A. (2019). Estimation of CO2 Emissions of Internal Combustion Engine Vehicle and Battery Electric Vehicle Using LCA. Sustainability, 11(9), 2690. https://doi.org/10.3390/su11092690
+      </li>
 
       </ul>
     </div>

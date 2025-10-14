@@ -27,15 +27,20 @@ ChartJS.register(
   Legend
 );
 
-const gasEmissionsElectricityPerKWH = 490;
+
+
+const gasEmissionsElectricityPerKWH = 450;
+const coalEmissionsElectricityPerKWH = 900;
+
 const gasEmissionsHeatPerKWH = 185;
-const emissionsPerLitreDiesel = 2680;
-const emissionsWindPerKWH = 11;
+const emissionsPerLitreDiesel = 2620;
+const emissionsWindPerKWH = 0;
 
 const initialFormData = {
   electricity: {
     existingCarbonFreeElectricity: "",
-    existingFossilFuelElectricity: "",
+    existingGasElectricity: "",   // NEW
+    existingCoalElectricity: "",  // NEW
     currentWindCapacityGW: "",
     currentSolarCapacityGW: "",
     lowDemandGW: "",
@@ -51,19 +56,19 @@ const initialFormData = {
       distance: "",
       kWhPerKm: 0.19,
       totalElectricity: 0,
-      emissionsPerKm: 130,
+      emissionsPerKm: 168,
     },
     busesSmall: {
       numVehicles: "",
       distance: "",
       kWhPerKm: 0.23,
       totalElectricity: 0,
-      emissionsPerKm: 153,
+      emissionsPerKm: 180.8,
     },
     busesLarge: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 4.63,
+      kWhPerKm: 5.19,
       totalElectricity: 0,
       emissionsPerKm: 822,
     },
@@ -72,35 +77,35 @@ const initialFormData = {
       distance: "",
       kWhPerKm: 0.23,
       totalElectricity: 0,
-      emissionsPerKm: 193,
+      emissionsPerKm: 180.8,
     },
     heavyGoods: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 4.63,
+      kWhPerKm: 5.19,
       totalElectricity: 0,
-      emissionsPerKm: 1045,
+      emissionsPerKm: 900,
     },
     tractors: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 4.63,
+      kWhPerKm: 5.19,
       totalElectricity: 0,
-      emissionsPerKm: 1045,
+      emissionsPerKm: 900,
     },
     motorcycles: {
       numVehicles: "",
       distance: "",
       kWhPerKm: 0.11,
       totalElectricity: 0,
-      emissionsPerKm: 113,
+      emissionsPerKm: 46.5,
     },
     other: {
       numVehicles: "",
       distance: "",
       kWhPerKm: 0.23,
       totalElectricity: 0,
-      emissionsPerKm: 193,
+      emissionsPerKm: 180.8,
     },
   },
   railDiesel: "",
@@ -120,10 +125,10 @@ function App() {
   const [showContact, setShowContact] = useState(false); // State for showing Contact
   const [newGrid, setNewGrid] = useState({}); // State for storing new grid calculation
   const [turbineCapacityMW, setTurbineCapacityMW] = useState(6.6); // Average Turbine Capacity
-  const [windCapacityFactor, setWindCapacityFactor] = useState(34); // Wind Capacity Factor in %
-  const [solarCapacityFactor, setSolarCapacityFactor] = useState(11); // Solar Capacity Factor in %
-  const [windSolarRatio, setWindSolarRatio] = useState(90); // Default to 90% wind
-  const [storageDuration, setStorageDuration] = useState(1);
+  const [windCapacityFactor, setWindCapacityFactor] = useState(26); // Wind Capacity Factor in %
+  const [solarCapacityFactor, setSolarCapacityFactor] = useState(13); // Solar Capacity Factor in %
+  const [windSolarRatio, setWindSolarRatio] = useState(70); // Default to 90% wind
+  const [storageDuration, setStorageDuration] = useState(2);
   const [lakeHeightDifference, setLakeHeightDifference] = useState(150);
   const [includeStorage, setIncludeStorage] = useState(false);
 
@@ -153,6 +158,10 @@ function App() {
       0
     );
 
+    const existingFossilFuelElectricityTWh =
+    (parseFloat(formData.electricity.existingGasElectricity || 0) +
+      parseFloat(formData.electricity.existingCoalElectricity || 0));
+
     let roadTransportEmissionsTotal = Object.values(
       formData.roadTransport
     ).reduce((acc, curr) => {
@@ -168,9 +177,9 @@ function App() {
       roadTransportEmissionsTotal / 1000000 / 1000000;
 
     // Rail
-    const dieselEnergyContent = 11.9; // kWh per liter
-    const dieselEngineEfficiency = 0.45; // 45% efficient
-    const electricLocomotiveEfficiency = 0.73; // 73% efficient
+    const dieselEnergyContent = 9.96; // kWh per liter
+    const dieselEngineEfficiency = 0.40; // 40% efficient
+    const electricLocomotiveEfficiency = 0.85; // 85% efficient
     const transmissionLoss = 0.1; // 10% loss in electricity transmission
 
     // Input: Diesel consumption in millions of liters
@@ -197,7 +206,7 @@ function App() {
 
     const usefulWorkInTWh = shippingTWh * 0.38;
     const kgOfHydrogenNeeded = (usefulWorkInTWh * 1000000000) / 15;
-    const electricityNeededShipping = (kgOfHydrogenNeeded * 52.5) / 1000000000;
+    const electricityNeededShipping = (kgOfHydrogenNeeded * 56) / 1000000000;
 
     const residentialHeat = formData.heat.residentialHeat
       ? parseFloat(formData.heat.residentialHeat) / 4
@@ -207,8 +216,7 @@ function App() {
       : 0;
 
     const newGridSize =
-      // parseFloat(formData.electricity.existingCarbonFreeElectricity || 0) +
-      parseFloat(formData.electricity.existingFossilFuelElectricity || 0) +
+      existingFossilFuelElectricityTWh +
       residentialHeat +
       industryHeat +
       roadTransportTotal +
@@ -232,33 +240,29 @@ function App() {
       1000000;
 
     // electricity emisisons
-    let existingElectricityEmissions =
-      ((formData.electricity.existingFossilFuelElectricity || 0) *
-        1000000000 *
-        gasEmissionsElectricityPerKWH) /
-      // convert to tonnes
-      1000000 /
-      // convert to millions
-      1000000;
+    // electricity emissions (split gas vs coal)
+    const existingGasElectricityEmissions =
+      ((formData.electricity.existingGasElectricity || 0) * 1e9 * gasEmissionsElectricityPerKWH) /
+      1e6 / 1e6; // to Mt
 
-    existingElectricityEmissions =
-      existingElectricityEmissions +
-      ((formData.electricity.existingCarbonFreeElectricity || 0) *
-        1000000000 *
-        emissionsWindPerKWH) /
-        // convert to tonnes
-        1000000 /
-        // convert to millions
-        1000000;
+    const existingCoalElectricityEmissions =
+      ((formData.electricity.existingCoalElectricity || 0) * 1e9 * coalEmissionsElectricityPerKWH) /
+      1e6 / 1e6; // to Mt
 
-    console.log(
-      "existingElectricityEmissions is ",
-      existingElectricityEmissions
-    );
+    const existingCarbonFreeElectricityEmissions =
+      ((formData.electricity.existingCarbonFreeElectricity || 0) * 1e9 * emissionsWindPerKWH) /
+      1e6 / 1e6; // to Mt (likely zero)
+
+    const existingElectricityEmissions =
+      existingGasElectricityEmissions +
+      existingCoalElectricityEmissions +
+      existingCarbonFreeElectricityEmissions;
+
+
 
     // heat emissions
     const existingHeatEmissions =
-      ((formData.heat.residentialHeatn || 0) *
+      ((formData.heat.residentialHeat || 0) *
         1000000000 *
         gasEmissionsHeatPerKWH +
         (formData.heat.industryHeat || 0) *
@@ -279,7 +283,6 @@ function App() {
       // convert to millions
       1000000;
 
-    console.log("newGridEmissions is ", newGridEmissions);
 
     //if (newGridSize) {
     const {
@@ -292,7 +295,7 @@ function App() {
     } = calculateWindAndSolar(
       newGridSize,
       formData.electricity.existingCarbonFreeElectricity,
-      parseFloat(formData.electricity.existingFossilFuelElectricity || 0)
+      existingFossilFuelElectricityTWh  // gas + coal total
     );
 
     setNewGrid({
@@ -305,10 +308,13 @@ function App() {
       numTurbines,
       extraSolarCapacityGW,
       numSolarPanels,
-      existingCarbonFreeElectricity:
-        formData.electricity.existingCarbonFreeElectricity,
-      existingFossilFuelElectricity:
-        formData.electricity.existingFossilFuelElectricity,
+      existingCarbonFreeElectricity: formData.electricity.existingCarbonFreeElectricity,
+      // NEW:
+      existingGasElectricity: formData.electricity.existingGasElectricity,
+      existingCoalElectricity: formData.electricity.existingCoalElectricity,
+      // Optional helper if you still need a combined figure in charts:
+      existingFossilFuelElectricity: existingFossilFuelElectricityTWh,
+
       currentWindCapacityGW: formData.electricity.currentWindCapacityGW,
       currentSolarCapacityGW: formData.electricity.currentSolarCapacityGW,
       volumeOfWater: volumeOfWater,
@@ -316,7 +322,11 @@ function App() {
       roadTransportEmissionsTotal: roadTransportEmissionsTotal,
       railEmissions: railEmissions,
       shippingEmissions: shippingEmissions,
+
+      // Emissions (split and total)
       existingElectricityEmissions: existingElectricityEmissions,
+      existingGasElectricityEmissions,     // NEW
+      existingCoalElectricityEmissions,    // NEW
       existingHeatEmissions: existingHeatEmissions,
       newGridEmissions: newGridEmissions,
     });
@@ -355,12 +365,16 @@ function App() {
   const defaultData = {
     Ireland: {
       electricity: {
+
+
         existingCarbonFreeElectricity: 12.63,
-        existingFossilFuelElectricity: 21.25,
-        currentWindCapacityGW: 5.585, // Current wind capacity in GW
-        currentSolarCapacityGW: 1.185, // Current solar capacity in GW
+        existingGasElectricity: 20.0,   // NEW (example split)
+        existingCoalElectricity: 1.25,  // NEW (example split)
+        currentWindCapacityGW: 5.585,
+        currentSolarCapacityGW: 1.185,
         lowDemandGW: 2.5,
         lowDemandDuringDayGW: 4.5,
+
       },
       heat: {
         residentialHeat: 36.08,
@@ -385,7 +399,7 @@ function App() {
         busesLarge: {
           numVehicles: 11206,
           distance: 34965,
-          kWhPerKm: 4.63,
+          kWhPerKm: 5.19,
           totalElectricity: 0,
           emissionsPerKm: 822,
         },
@@ -399,14 +413,14 @@ function App() {
         heavyGoods: {
           numVehicles: 146704,
           distance: 20615,
-          kWhPerKm: 4.63,
+          kWhPerKm: 5.19,
           totalElectricity: 0,
           emissionsPerKm: 1045,
         },
         tractors: {
           numVehicles: 84170,
           distance: 2000,
-          kWhPerKm: 4.63,
+          kWhPerKm: 5.19,
           totalElectricity: 0,
           emissionsPerKm: 1045,
         },
@@ -572,7 +586,8 @@ function App() {
       let storageNeededPerDayGWh = (totalEnergyOfNewGrid / 365) * 1000;
 
       // factor in losses when going from pumped hydro to electricity
-      storageNeededPerDayGWh = storageNeededPerDayGWh / 0.7;
+      const pumpedHydroRoundTripEff = 0.77; 
+      storageNeededPerDayGWh = storageNeededPerDayGWh / pumpedHydroRoundTripEff;
 
       const pumpedCapacity100 =
         (formData.electricity.currentWindCapacityGW
@@ -619,37 +634,99 @@ function App() {
       const totalSolarCanBeStoredPerDay =
         rateOfStorageSolar * averageHoursPerdayCanStoreSolar;
 
-      const windContribution =
-        totalWindCanBeStoredPerDay /
-        (totalWindCanBeStoredPerDay + totalSolarCanBeStoredPerDay);
-      const solarContribution =
-        totalSolarCanBeStoredPerDay /
-        (totalWindCanBeStoredPerDay + totalSolarCanBeStoredPerDay);
+      // --- HOW MUCH OF THE DAILY SURPLUS CAN BE STORED BY WIND VS SOLAR? ---
+      const totalStoreablePerDay =
+        (totalWindCanBeStoredPerDay || 0) + (totalSolarCanBeStoredPerDay || 0);
 
-      const windTarget = storageNeededPerDayGWh * windContribution;
-      const solarTarget = storageNeededPerDayGWh * solarContribution;
+      // Guard against divide-by-zero (e.g., if both are zero, split 50/50 for math to proceed)
+      let windContribution = 0.5;
+      let solarContribution = 0.5;
+      if (totalStoreablePerDay > 0) {
+        windContribution  = (totalWindCanBeStoredPerDay || 0) / totalStoreablePerDay;
+        solarContribution = (totalSolarCanBeStoredPerDay || 0) / totalStoreablePerDay;
+      }
 
-      // percentage capcity needed to increase wind
-      const windCapacityIncreaseNeeded =
-        (windTarget - totalWindCanBeStoredPerDay) / totalWindCanBeStoredPerDay;
-      const solarCapacityIncreaseNeeded =
-        (solarTarget - totalSolarCanBeStoredPerDay) /
-        totalSolarCanBeStoredPerDay;
+      // ❗ KEY CHANGE: targets are **per day**, not “days * per day”
+      const windTargetPerDay_GWh  = storageNeededPerDayGWh * windContribution;
+      const solarTargetPerDay_GWh = storageNeededPerDayGWh * solarContribution;
 
-      extraWindCapacityGW =
-        extraWindCapacityGW + extraWindCapacityGW * windCapacityIncreaseNeeded;
+      // Window lengths & effective performance
+      const H_wind  = averageHoursPerdayCanStoreWind;   // 8 h
+      const H_solar = averageHoursPerdayCanStoreSolar;  // 6 h
+      const etaWind  = averagePerformanceDuringExcessProductionHoursWind;   // 0.7
+      const etaSolar = averagePerformanceDuringExcessProductionHoursSolar;  // 0.5
 
-      extraSolarCapacityGW =
-        extraSolarCapacityGW +
-        extraSolarCapacityGW * (solarCapacityIncreaseNeeded || 0);
+      // Base loads during those windows (GW)
+      const L_night = projectedLowerPowerDemandAtNightGW;
+      const L_day   = projectedLowerPowerDemandDuringDayGW;
+
+      // Existing nameplate before storage-driven bump (GW)
+      const W_base = (formData.electricity.currentWindCapacityGW || 0) + extraWindCapacityGW;
+      const S_base = (formData.electricity.currentSolarCapacityGW || 0) + extraSolarCapacityGW;
+
+      // Required *charging rate* to meet the **daily** target within the charging windows (GW)
+      const windRequiredRateGW  = windTargetPerDay_GWh  / H_wind;  // GWh / h = GW
+      const solarRequiredRateGW = solarTargetPerDay_GWh / H_solar; // GWh / h = GW
+
+      // Nameplate to achieve that surplus during charging window:
+      // eta * Nameplate - BaseLoad = RequiredRate  =>  Nameplate = (RequiredRate + BaseLoad)/eta
+      const W_req = (windRequiredRateGW  + L_night) / etaWind;
+      const S_req = (solarRequiredRateGW + L_day)   / etaSolar;
+
+      // Shortfalls to add (never negative)
+      const addWindGW  = Math.max(0, W_req - W_base);
+      const addSolarGW = Math.max(0, S_req - S_base);
+
+      // Add the storage-driven increments on top of the non-storage extra
+      extraWindCapacityGW  += addWindGW;
+      extraSolarCapacityGW += addSolarGW;
+
+      // ---------- DEBUG (updated to PER-DAY targets) ----------
+      console.log('--- STORAGE DEBUG ---');
+      console.log({
+        totalEnergyOfNewGrid_TWh: totalEnergyOfNewGrid,
+        storageDuration_days: storageDuration,
+        storageNeededPerDay_GWh: storageNeededPerDayGWh,
+        totalWindCanBeStoredPerDay_GWh: totalWindCanBeStoredPerDay,
+        totalSolarCanBeStoredPerDay_GWh: totalSolarCanBeStoredPerDay,
+        windContribution, solarContribution,
+
+        // PER-DAY targets (correct)
+        windTargetPerDay_GWh, solarTargetPerDay_GWh,
+
+        averageHoursPerdayCanStoreWind: H_wind,
+        averageHoursPerdayCanStoreSolar: H_solar,
+        averagePerformanceDuringExcessProductionHoursWind: etaWind,
+        averagePerformanceDuringExcessProductionHoursSolar: etaSolar,
+
+        projectedLowerPowerDemandAtNightGW: L_night,
+        projectedLowerPowerDemandDuringDayGW: L_day,
+
+        W_base_GW: W_base,
+        S_base_GW: S_base,
+
+        windRequiredRateGW,
+        solarRequiredRateGW,
+
+        W_req_GW: W_req,
+        S_req_GW: S_req,
+
+        addWindGW, addSolarGW,
+
+        // Volume still uses total days (correct)
+        note: 'Reservoir energy scales with days; charging rate is per-day',
+      });
+      console.log('--- END STORAGE DEBUG ---');
+
 
       //m = E/g*h
       const E = storageNeededPerDayGWh * storageDuration * 3.6 * 1000000000000;
 
+
       const g = 9.8;
       const h = lakeHeightDifference;
 
-      const m = E / (g + h);
+      const m = E / (g * h);
 
       volumeOfWater = Math.ceil(m / 1000);
     }
@@ -680,25 +757,38 @@ function App() {
         backgroundColor: "#4CAF50",
       },
       {
-        label: "Existing Carbon-Powered Electricity",
+        label: "Existing Gas-Powered Electricity",
         data: [
-          newGrid.existingFossilFuelElectricity
-            ? newGrid.existingFossilFuelElectricity
-            : 0,
+          newGrid.existingGasElectricity ? newGrid.existingGasElectricity : 0,
           0,
         ],
-        backgroundColor: "#d1d1e0",
+        backgroundColor: "#b0c4de", // light steel-ish blue for gas
       },
       {
-        label: "Existing Carbon-Powered Electricity Now Converted To Renewable",
+        label: "Existing Coal-Powered Electricity",
+        data: [
+          newGrid.existingCoalElectricity ? newGrid.existingCoalElectricity : 0,
+          0,
+        ],
+        backgroundColor: "#a9a9a9", // darker gray for coal
+      },
+      {
+        label: "Gas (Converted to Renewable)",
         data: [
           0,
-          newGrid.existingFossilFuelElectricity
-            ? newGrid.existingFossilFuelElectricity
-            : 0,
+          newGrid.existingGasElectricity ? newGrid.existingGasElectricity : 0,
         ],
         backgroundColor: "#8BC34A",
       },
+      {
+        label: "Coal (Converted to Renewable)",
+        data: [
+          0,
+          newGrid.existingCoalElectricity ? newGrid.existingCoalElectricity : 0,
+        ],
+        backgroundColor: "#7CB342",
+      },
+      
       {
         label: "Electricity for Road Transport",
         data: [
@@ -738,7 +828,7 @@ function App() {
   };
 
   const emissionsData = {
-    labels: ["Current Emissions", "Required Grid Emissions"],
+    labels: ["Current Emissions"],
     datasets: [
       {
         label: "Road Transport Emissions",
@@ -761,14 +851,24 @@ function App() {
         backgroundColor: "#FFC107", // Yellow for shipping
       },
       {
-        label: "Existing Fossil-Fuel Electricity Emissions",
+        label: "Electricity Emissions (Gas)",
         data: [
-          newGrid.existingElectricityEmissions
-            ? newGrid.existingElectricityEmissions
+          newGrid.existingGasElectricityEmissions
+            ? newGrid.existingGasElectricityEmissions
             : 0,
           0,
         ],
-        backgroundColor: "#9E9E9E", // Gray for existing electricity
+        backgroundColor: "#9CC4FF", // gas
+      },
+      {
+        label: "Electricity Emissions (Coal)",
+        data: [
+          newGrid.existingCoalElectricityEmissions
+            ? newGrid.existingCoalElectricityEmissions
+            : 0,
+          0,
+        ],
+        backgroundColor: "#6E6E6E", // coal
       },
       {
         label: "Existing Heat Emissions",
@@ -778,11 +878,7 @@ function App() {
         ],
         backgroundColor: "#607D8B", // Blue-gray for heat
       },
-      {
-        label: "New Grid Emissions",
-        data: [0, newGrid.newGridEmissions ? newGrid.newGridEmissions : 0],
-        backgroundColor: "#8BC34A", // Green for new grid emissions
-      },
+
     ].filter((dataset) => dataset.data.some((value) => value > 0)), // Only include datasets with data > 0
   };
 
@@ -1032,42 +1128,50 @@ function App() {
             </h3>{" "}
             {/* Dark gray text */}
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "10fr 1fr",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <label
+            <div
               style={{
-                textAlign: "right",
-                marginRight: "10px",
-                color: "#424242",
-                display: "flex",
+                display: "grid",
+                gridTemplateColumns: "10fr 1fr",
                 alignItems: "center",
+                gap: "10px",
               }}
             >
-              {" "}
-              {/* Slightly darker gray */}
-              Carbon-Powered Electricity Per Annum (TWh):
-            </label>
-            <input
-              type="number"
-              value={formData.electricity.existingFossilFuelElectricity}
-              onChange={(e) =>
-                handleChange(e, "existingFossilFuelElectricity", "electricity")
-              }
-              style={{
-                padding: "8px",
-                borderRadius: "5px",
-                border: "1px solid #CCC",
-                maxWidth: "120px",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
+              <label style={{ textAlign: "right", marginRight: "10px", color: "#424242", display: "flex", alignItems: "center" }}>
+                Gas-Powered Electricity Per Annum (TWh):
+              </label>
+              <input
+                type="number"
+                value={formData.electricity.existingGasElectricity}
+                onChange={(e) =>
+                  handleChange(e, "existingGasElectricity", "electricity")
+                }
+                style={{
+                  padding: "8px",
+                  borderRadius: "5px",
+                  border: "1px solid #CCC",
+                  maxWidth: "120px",
+                  boxSizing: "border-box",
+                }}
+              />
+
+              <label style={{ textAlign: "right", marginRight: "10px", color: "#424242", display: "flex", alignItems: "center" }}>
+                Coal-Powered Electricity Per Annum (TWh):
+              </label>
+              <input
+                type="number"
+                value={formData.electricity.existingCoalElectricity}
+                onChange={(e) =>
+                  handleChange(e, "existingCoalElectricity", "electricity")
+                }
+                style={{
+                  padding: "8px",
+                  borderRadius: "5px",
+                  border: "1px solid #CCC",
+                  maxWidth: "120px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
         </div>
 
         {/* Heat Input */}
@@ -1690,6 +1794,21 @@ function App() {
                     boxSizing: "border-box",
                   }}
                 />
+                <label style={{ textAlign: "left" }}>
+                  Number of Storage Days:
+                </label>
+                <input
+                  type="number"
+                  value={storageDuration}
+                  onChange={(e) => setStorageDuration(parseFloat(e.target.value))}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "5px",
+                    border: "1px solid #CCC",
+                    width: "100%",
+                    boxSizing: "border-box",
+                  }}
+/>
               </div>
             )}
           </div>
@@ -1931,10 +2050,9 @@ function App() {
                   <br />
                   This volume is approximately{" "}
                   <span style={{ color: "#007BFF", fontWeight: "bold" }}>
-                    {(newGrid?.volumeOfWater / 7452000000).toFixed(2)}%
+                    {Math.round(newGrid?.volumeOfWater / 2500).toLocaleString()}
                   </span>{" "}
-                  of the volume of Loch Ness, the largest lake in Great Britain
-                  by volume.
+                  Olympic swimming pools
                 </p>
               </div>
             </div>
