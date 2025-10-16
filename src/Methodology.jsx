@@ -76,7 +76,11 @@ function Methodology() {
         </li>
 
         <li>
-        <h2>Electric Vehicle (EV) Energy Consumption</h2>
+        <h2>ethodology for Road Transport</h2>
+        <p>
+          For lighter vehicles, it was assued these would be replaced by lithium-ion EV's. For heavier vehicles, given the energy density requirements, it was assumed these would be replaced by hydrogen fuel cells. The electricty required to power the EVs is below, and the electricity required to produce the hydrogen - including the significsnt loses in the process - is calculated.
+
+        </p>
 
         <table border="1" cellspacing="0" cellpadding="6">
           <thead>
@@ -101,7 +105,7 @@ function Methodology() {
               <td>EV Database, 2024; European Environment Agency, 2025</td>
             </tr>
             <tr>
-              <td>Buses (large)</td>
+              <td>Buses (large) <strong>*</strong></td>
               <td>5.19</td>
               <td>822</td>
               <td>Authors’ calc; Carbon Independent, 2025a</td>
@@ -113,13 +117,13 @@ function Methodology() {
               <td>EV Database, 2024; assume same as small buses</td>
             </tr>
             <tr>
-              <td>Heavy Goods Vehicles</td>
+              <td>Heavy Goods Vehicles <strong>*</strong></td>
               <td>5.19</td>
               <td>900</td>
               <td>Authors’ calc; 57 g CO₂/t-km × 16 t (Ragon &amp; Rodriguez, 2021)</td>
             </tr>
             <tr>
-              <td>Tractors</td>
+              <td>Tractors <strong>*</strong></td>
               <td>5.19</td>
               <td>900</td>
               <td>Authors’ calc; assume same as HGV</td>
@@ -138,8 +142,9 @@ function Methodology() {
             </tr>
           </tbody>
         </table>
-
+        <strong>*To be replaced with Hydrogen Fuel Cells</strong>
         <br />
+
 
           <table border="1" cellspacing="0" cellpadding="6">
             <thead>
