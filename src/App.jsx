@@ -68,7 +68,7 @@ const initialFormData = {
     busesLarge: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 5.19,
+      kWhPerKm: 1.2,
       totalElectricity: 0,
       emissionsPerKm: 822,
     },
@@ -82,14 +82,14 @@ const initialFormData = {
     heavyGoods: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 5.19,
+      kWhPerKm: 1.2,
       totalElectricity: 0,
       emissionsPerKm: 900,
     },
     tractors: {
       numVehicles: "",
       distance: "",
-      kWhPerKm: 5.19,
+      kWhPerKm: 1.2,
       totalElectricity: 0,
       emissionsPerKm: 900,
     },
@@ -399,7 +399,7 @@ function App() {
         busesLarge: {
           numVehicles: 11206,
           distance: 34965,
-          kWhPerKm: 5.19,
+          kWhPerKm: 1.2,
           totalElectricity: 0,
           emissionsPerKm: 822,
         },
@@ -413,14 +413,14 @@ function App() {
         heavyGoods: {
           numVehicles: 146704,
           distance: 20615,
-          kWhPerKm: 5.19,
+          kWhPerKm: 1.2,
           totalElectricity: 0,
           emissionsPerKm: 1045,
         },
         tractors: {
           numVehicles: 84170,
           distance: 2000,
-          kWhPerKm: 5.19,
+          kWhPerKm: 1.2,
           totalElectricity: 0,
           emissionsPerKm: 1045,
         },

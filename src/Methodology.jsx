@@ -76,9 +76,9 @@ function Methodology() {
         </li>
 
         <li>
-        <h2>ethodology for Road Transport</h2>
+        <h2>Methodology for Road Transport</h2>
         <p>
-          For lighter vehicles, it was assued these would be replaced by lithium-ion EV's. For heavier vehicles, given the energy density requirements, it was assumed these would be replaced by hydrogen fuel cells. The electricty required to power the EVs is below, and the electricity required to produce the hydrogen - including the significsnt loses in the process - is calculated.
+          It was assumed all vehicles would be replaced by lithium-ion EV's. Note: It may be the case that long all heavy vehicles will be replaced by hydrogen fuel cells as they have a better energy density. Calculation for producing the hydrogen necessary are below.
 
         </p>
 
@@ -106,9 +106,9 @@ function Methodology() {
             </tr>
             <tr>
               <td>Buses (large) <strong>*</strong></td>
-              <td>5.19</td>
+              <td>1.2</td>
               <td>822</td>
-              <td>Authors’ calc; Carbon Independent, 2025a</td>
+              <td>MAN Truck & Bus, 2025; Carbon Independent, 2025a</td>
             </tr>
             <tr>
               <td>Light Goods Vehicles</td>
@@ -118,15 +118,15 @@ function Methodology() {
             </tr>
             <tr>
               <td>Heavy Goods Vehicles <strong>*</strong></td>
-              <td>5.19</td>
+              <td>1.2</td>
               <td>900</td>
-              <td>Authors’ calc; 57 g CO₂/t-km × 16 t (Ragon &amp; Rodriguez, 2021)</td>
+              <td>MAN Truck & Bus, 2025; 57 g CO₂/t-km × 16 t (Ragon &amp; Rodriguez, 2021)</td>
             </tr>
             <tr>
               <td>Tractors <strong>*</strong></td>
-              <td>5.19</td>
+              <td>1.2</td>
               <td>900</td>
-              <td>Authors’ calc; assume same as HGV</td>
+              <td>MAN Truck & Bus, 2025; assume same as HGV</td>
             </tr>
             <tr>
               <td>Motorcycles</td>
@@ -350,6 +350,11 @@ Xia, M., et al. (2013) ‘Carbon emission coefficient measurement of the coal-to
 
       <li>
 Kawamoto, R., Mochizuki, H., Moriguchi, Y., Nakano, T., Motohashi, M., Sakai, Y., & Inaba, A. (2019). Estimation of CO2 Emissions of Internal Combustion Engine Vehicle and Battery Electric Vehicle Using LCA. Sustainability, 11(9), 2690. https://doi.org/10.3390/su11092690
+      </li>
+
+      <li>
+MAN Truck & Bus (2025) MAN eTrucks: Already over 5 million kilometres in customer use. 04 September 2025. Available at: https://press.mantruckandbus.com/corporate/man-etrucks-already-over-5-million-kilometres-in-customer-use/
+ (Accessed: 31 October 2025).
       </li>
 
       </ul>
