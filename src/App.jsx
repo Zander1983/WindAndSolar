@@ -442,6 +442,923 @@ function App() {
       railDiesel: 43800000,
       shippingDiesel: 107376283,
     },
+    Spain: {
+      electricity: {
+        existingCarbonFreeElectricity: 172.67, 
+        // ~172.7 TWh generated from carbon-free sources 
+        // (42.2% renewables + 20.3% nuclear in 2022) [1][2]
+
+        existingGasElectricity: 68.14,
+        // ~68.14 TWh generated from gas-fired power plants in 2022 [3]
+
+        existingCoalElectricity: 7.77,
+        // ~7.77 TWh generated from coal in 2022 [4]
+
+        currentWindCapacityGW: 29.994,
+        // 29.994 GW wind capacity installed by end of 2022 [5]
+
+        currentSolarCapacityGW: 22.089,
+        // 22.089 GW solar (19.785 GW PV + 2.304 GW CSP) by end of 2022 [5]
+
+        lowDemandGW: 18.0,              // Approx. low overnight demand
+        lowDemandDuringDayGW: 25.0      // Approx. low midday demand
+      },
+
+      heat: {
+        residentialHeat: 93.88,  // ~93.9 TWh residential heat (space + water)
+        industryHeat: 153.0      // ~153.0 TWh industrial heat
+      },
+
+      windSolarRatio: 90,        // Default 90% wind, 10% solar (assumption)
+
+      roadTransport: {
+        cars: {
+          numVehicles: 25570000, // ~25.57M passenger cars (2022) [6]
+          distance: 16352,
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 130
+        },
+
+        busesSmall: {
+          numVehicles: 40426,    // ~40.4k small buses [7][8]
+          distance: 39504,
+          kWhPerKm: 0.23,
+          totalElectricity: 0,
+          emissionsPerKm: 153
+        },
+
+        busesLarge: {
+          numVehicles: 21083,    // ~21.1k large buses [7][8]
+          distance: 34965,
+          kWhPerKm: 1.2,
+          totalElectricity: 0,
+          emissionsPerKm: 822
+        },
+
+        lightGoods: {
+          numVehicles: 3900000,  // ~3.90M light goods vans [9][10]
+          distance: 20615,
+          kWhPerKm: 0.23,
+          totalElectricity: 0,
+          emissionsPerKm: 193
+        },
+
+        heavyGoods: {
+          numVehicles: 579000,   // ~579k heavy trucks [11]
+          distance: 20615,
+          kWhPerKm: 1.2,
+          totalElectricity: 0,
+          emissionsPerKm: 1045
+        },
+
+        tractors: {
+          numVehicles: 1200000,  // ~1.2M agricultural tractors [12]
+          distance: 2000,
+          kWhPerKm: 1.2,
+          totalElectricity: 0,
+          emissionsPerKm: 1045
+        },
+
+        motorcycles: {
+          numVehicles: 4600000,  // ~4.6M motorcycles & mopeds [13]
+          distance: 2741,
+          kWhPerKm: 0.11,
+          totalElectricity: 0,
+          emissionsPerKm: 113
+        },
+
+        other: {
+          numVehicles: 660000,   // ~0.66M other vehicles (est.)
+          distance: 20391,
+          kWhPerKm: 0.23,
+          totalElectricity: 0,
+          emissionsPerKm: 193
+        }
+      },
+
+      railDiesel: 50000000,      
+      // ~50M litres diesel for rail (~0.48 TWh) [14]
+
+      shippingDiesel: 500000000  
+      // ~500M litres diesel for domestic shipping (est.)
+    },
+    // [1] La demanda de electricidad en España en 2022
+    //     https://www.energias-renovables.com/panorama/cae-la-demanda-de-electricidad-en-espana-20230105
+    //
+    // [2] Centrales Nucleares – MITECO
+    //     https://www.miteco.gob.es/es/energia/nuclear/centrales.html
+    //
+    // [3] & [4] ¿De dónde procede la energía que consumimos en España?
+    //     CaixaBank Research
+    //     https://www.caixabank.com/es/esfera/content/de-donde-procede-energia-consumimos-espana
+    //
+    // [5] Spain – Energy (Trade.gov)
+    //     https://www.trade.gov/country-commercial-guides/spain-energy
+    //
+    // [6] [9] [10] [11] [13] ACEA – Vehicles in Use 2023
+    //     https://www.acea.auto/files/ACEA-report-vehicles-in-use-europe-2023.pdf
+    //
+    // [7] [8] Radiografía del parque español de autobuses
+    //     https://autopos.es/posventa-camion/radiografia-del-parque-espanol-de-autobuses-asi-estamos/
+    //
+    // [12] Maquinaria agrícola – EFEAgro
+    //     https://efeagro.com/agricultura/maquinaria-agricola/
+    //
+    // [14] Consumos energéticos y emisiones de la alta velocidad ferroviaria
+    //     https://www.geotren.es/blog/consumos-energeticos-y-emisiones-de-la-alta-velocidad-ferroviaria/
+
+    UK: {
+      electricity: {
+        existingCarbonFreeElectricity: 194.5,
+        // ~194.5 TWh generated from carbon-free sources (renewables + nuclear) in 2024 [1][5]
+
+        existingGasElectricity: 86.7,
+        // ~86.7 TWh generated from gas in 2024 [1][5]
+
+        existingCoalElectricity: 2.0,
+        // ~2.0 TWh generated from coal in 2024 (record low) [1][5]
+
+        currentWindCapacityGW: 30.4,
+        // ~30.4 GW wind (15.7 GW onshore + 14.7 GW offshore) at end of 2024 [2]
+
+        currentSolarCapacityGW: 18.1,
+        // ~18.1 GW solar PV capacity as of April 2025 [3]
+
+        lowDemandGW: 13.4,
+        // Forecast record low national demand ~13.4 GW in summer 2025 [4][13]
+
+        lowDemandDuringDayGW: 15.6
+        // Typical lowest daytime (midday) demand ~15.6 GW in recent summers [6]
+      },
+
+      heat: {
+        residentialHeat: 394,
+        // ~394 TWh/yr heat demand in homes (space heating + hot water) (around 2018) [7][8]
+
+        industryHeat: 326
+        // ~326 TWh/yr total industrial and non-domestic heat demand (incl. process heat) [7][9]
+      },
+
+      // Assumed wind:solar generation ratio (90% wind, 10% solar)
+      windSolarRatio: 90,
+
+      roadTransport: {
+        cars: {
+          numVehicles: 34360000,
+          // ~34.36 million licensed cars (mid-2025) [10]
+
+          distance: 11500,          // km per car per year (~7,100 miles) [10]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 150       // gCO2/km fleet-average tailpipe (approx.)
+        },
+
+        busesSmall: {
+          numVehicles: 90000,
+          // ~90k small buses/minibuses (subset of total bus/coach stock, est.)
+
+          distance: 21000,          // km per year per small bus (~13,000 miles/yr, est.)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 500       // gCO2/km diesel minibus, estimated [11]
+        },
+
+        busesLarge: {
+          numVehicles: 60000,
+          // ~60k large buses/coaches (remaining share of bus/coach fleet, est.)
+
+          distance: 21000,          // km per year per large bus (~13,000 miles/yr)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 822       // gCO2/km typical large diesel bus [11]
+        },
+
+        lightGoods: {
+          numVehicles: 4870000,
+          // ~4.87 million light goods vehicles (vans) [10]
+
+          distance: 19300,          // km per van per year (~12,000 miles/yr) [10]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 250       // gCO2/km diesel van (avg), est.
+        },
+
+        heavyGoods: {
+          numVehicles: 540000,
+          // ~0.54 million heavy goods vehicles [10]
+
+          distance: 49400,          // km per HGV per year (~30,700 miles/yr) [10]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1200      // gCO2/km heavy diesel truck, est.
+        },
+
+        tractors: {
+          numVehicles: 300000,
+          // ~300k agricultural tractors (subset of “other vehicles”) [10]
+
+          distance: 3000,           // km per tractor per year (low road usage, est.)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 600       // gCO2/km diesel tractor, est.
+        },
+
+        motorcycles: {
+          numVehicles: 1480000,
+          // ~1.48 million motorcycles [10]
+
+          distance: 3260,           // km per motorcycle per year (~2,000 miles/yr) [10]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 120       // gCO2/km average petrol motorcycle, est.
+        },
+
+        other: {
+          numVehicles: 570000,
+          // ~0.57 million “other” vehicles (non-tractor remainder of ~0.87M other) [10]
+
+          distance: 1000,           // km per year per other vehicle (very low usage, est.)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 300       // gCO2/km mixed specialised vehicles, est.
+        }
+      },
+
+      railDiesel: 557000000,
+      // ~557 million litres diesel used by passenger + freight rail in 2023/24 [12]
+
+      shippingDiesel: 1700000000
+      // ~1.7 billion litres marine fuel for domestic shipping (~5 MtCO2/yr, est.) [1]
+    },
+
+    // [1] UK energy statistics – DUKES 2025, Chapter 5 (electricity & fuel use)
+    //     https://assets.publishing.service.gov.uk/media/688a28656478525675739051/DUKES_2025_Chapter_5.pdf
+    //
+    // [2] RenewableUK – “UK wind and global offshore wind: 2024 in review”
+    //     https://www.renewableuk.com/energypulse/blog/uk-wind-and-global-offshore-wind-2024-in-review/
+    //
+    // [3] Solar Power Portal – “UK solar capacity up 5.9% year-on-year”
+    //     https://www.solarpowerportal.co.uk/solar-technology/uk-solar-capacity-up-5-9-year-on-year
+    //
+    // [4] Strategic Energy Europe – “UK grid operator prepares for record-breaking demand drop this 2025 summer”
+    //     https://strategicenergy.eu/uk-demand-drop-solar-surge/
+    //
+    // [5] The Guardian – “UK use of gas and coal for electricity at lowest since 1957”
+    //     https://www.theguardian.com/business/2024/jan/03/uk-gas-coal-electricity-fossil-fuels-renewables
+    //
+    // [6] National Grid ESO – Summer Outlook / Blackout report (demand troughs)
+    //     https://www.theblackoutreport.co.uk/2023/04/20/national-grid-summer-outlook-2023/
+    //
+    // [7] “Spatial and temporal data to study residential heat decarbonisation pathways in England and Wales”
+    //     Scientific Data (Nature)
+    //     https://www.nature.com/articles/s41597-022-01356-9
+    //
+    // [8] Ofgem – “The decarbonisation of heat”
+    //     https://www.ofgem.gov.uk/sites/default/files/docs/2016/11/ofgem_future_insights_programme_-_the_decarbonisation_of_heat.pdf
+    //
+    // [9] Heat Roadmap Europe – Country Presentation: UK
+    //     https://heatroadmap.eu/wp-content/uploads/2018/11/HRE4-Country_presentation-UK.pdf
+    //
+    // [10] RAC Foundation – “General facts and figures about roads and road use”
+    //     https://www.racfoundation.org/motoring-faqs/mobility
+    //
+    // [11] Carbon Independent – “Emissions from bus travel”
+    //     https://www.carbonindependent.org/20.html
+    //
+    // [12] Office of Rail and Road – “Rail Environment, April 2023 to March 2024”
+    //     https://dataportal.orr.gov.uk/media/q34mblpr/rail-environment-2023-24.pdf
+    //
+    // [13] Reuters – “UK power grid could face lowest-ever demand this summer, operator says”
+    //     https://www.reuters.com/world/uk/uk-power-grid-could-face-lowest-ever-demand-this-summer-operator-says-2025-04-16/
+
+
+    Nigeria: {
+      electricity: {
+        existingCarbonFreeElectricity: 9.3,
+        // ~9.3 TWh hydro + other renewables generation in 2022 [1][2][4]
+
+        existingGasElectricity: 28.6,
+        // ~28.6 TWh gas-fired generation in 2022 (~75% of total) [1][2][4][6]
+
+        existingCoalElectricity: 0,
+        // ~0 TWh coal-fired generation (coal ~0% of mix) [3]
+
+        currentWindCapacityGW: 0.01,
+        // ~0.01 GW installed wind capacity (~10 MW pilot) [4]
+
+        currentSolarCapacityGW: 0.386,
+        // ~0.386 GW installed solar PV capacity (around 2024) [4][5]
+
+        lowDemandGW: 3.0,
+        // ~3.0 GW approximate lowest off-peak demand (~3000 MW) [6]
+
+        lowDemandDuringDayGW: 3.57
+        // ~3.57 GW daytime minimum demand on high-generation days [6]
+      },
+
+      heat: {
+        residentialHeat: 289,
+        // ~289 TWh household heat/cooking (mainly biomass; ~42% of final energy use) [1]
+
+        industryHeat: 100
+        // ~100 TWh industrial process heat (~14–15% of final energy use) [1][2]
+      },
+
+      // Default mix assumption for renewables in model (Nigeria is solar-dominated):
+      windSolarRatio: 90,
+
+      roadTransport: {
+        cars: {
+          numVehicles: 4740834,
+          // ~4.74 million passenger cars (2018 estimate: private, state, diplomat-owned) [7]
+
+          distance: 15000,        // km per car per year (avg) [9]
+          kWhPerKm: 0.19,         // if electrified
+          totalElectricity: 0,
+          emissionsPerKm: 180     // gCO2/km, est. average gasoline car
+        },
+
+        busesSmall: {
+          numVehicles: 300000,
+          // ~300k minibuses (e.g. “danfo”; Lagos alone ~75k) [8]
+
+          distance: 30000,        // km per year (intensive urban service) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 500     // gCO2/km older diesel/petrol minibuses, est.
+        },
+
+        busesLarge: {
+          numVehicles: 50000,
+          // ~50k large buses (intercity coaches, BRT, etc.) [7][8]
+
+          distance: 50000,        // km per year (long-distance + BRT) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 800     // gCO2/km diesel coach/bus, est.
+        },
+
+        lightGoods: {
+          numVehicles: 500000,
+          // ~500k light goods vehicles (pickups, vans) [7]
+
+          distance: 20000,        // km per year [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 400     // gCO2/km diesel pickup/van, est.
+        },
+
+        heavyGoods: {
+          numVehicles: 200000,
+          // ~200k heavy goods vehicles (trucks, trailers) [7]
+
+          distance: 50000,        // km per year (frequent long-haul) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // gCO2/km HDVs dominate transport emissions [12]
+        },
+
+        tractors: {
+          numVehicles: 50000,
+          // ~50k agricultural tractors (low mechanisation) [7][12]
+
+          distance: 2000,         // km per year (mostly off-road) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // gCO2/km diesel tractor, est.
+        },
+
+        motorcycles: {
+          numVehicles: 5100000,
+          // ~5.1 million registered two-wheelers (2022) [10]
+
+          distance: 10000,        // km per year (heavily used as taxis/deliveries) [9][10]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 50      // gCO2/km small-engine motorcycles, high fuel economy
+        },
+
+        other: {
+          numVehicles: 400000,
+          // ~400k other vehicles (three-wheelers, specialised vehicles, etc.) [7][12]
+
+          distance: 10000,        // km per year [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 200     // gCO2/km mixed fleet average, est.
+        }
+      },
+
+      railDiesel: 15000000,
+      // ~15 million litres diesel used by rail per year (~24k L/day on one main route; ~0.7% diesel use) [11][12]
+
+      shippingDiesel: 35000000
+      // ~35 million litres diesel for domestic navigation (~1.7% of diesel use; ~2× rail) [12]
+    },
+
+    // [1] IEA – Country Profile: Nigeria
+    //     https://iea.blob.core.windows.net/assets/c0cba412-d48c-4712-9144-48f93bd9e277/CountryProfileNigeria.pdf
+    //
+    // [2] Climate Analytics – 1.5°C Pathways: Power sector Nigeria
+    //     https://1p5ndc-pathways.climateanalytics.org/countries/nigeria/sectors/power
+    //
+    // [3] “Coal As Another Alternative Answer To Power Generation – Nigeria ...”
+    //     https://journals.co.za/doi/abs/10.10520/ejc-sl_jeteas_v16_n3_a5
+    //
+    // [4] Trade.gov – “Electricity, Power Systems and Renewable Energy” (Nigeria)
+    //     https://www.trade.gov/country-commercial-guides/electricity-power-systems-and-renewable-energy
+    //
+    // [5] Energy Tracker Asia – “Solar Energy in Nigeria: A Reliable Alternative To A Struggling Grid”
+    //     https://energytracker.asia/solar-energy-nigeria/
+    //
+    // [6] Nairametrics – “Electricity update: Nigeria's power generation peaks to record high of 5,000 MW”
+    //     https://nairametrics.com/2022/09/02/electricity-update-nigerias-power-generation-falls-massively-to-68856mwh/
+    //
+    // [7] Climate Scorecard – “50% of Vehicles in Nigeria Projected to be Locally Built or Assembled EVs in Ten Years”
+    //     https://www.climatescorecard.org/2022/11/50-of-vehicles-in-nigeria-projected-to-be-locally-built-or-assembled-evs-in-tenyears/
+    //
+    // [8] “The Danfo – Nigeria In A Box” (context on minibus use)
+    //     https://nigeriainabox.com/product/the-danfo/
+    //
+    // [9] “Annual average distance traveled of vehicle categories...” – ResearchGate figure
+    //     https://www.researchgate.net/figure/Annual-average-distance-traveled-of-vehicle-categories-in-different-age-groups-onroad_fig4_355975590
+    //
+    // [10] FIA Foundation – Sub-Saharan motorcycle boom report
+    //      https://www.fiafoundation.org/news/sub-saharan-motorcycle-boom-puts-lives-at-risk-warns-new-fia-foundation-report
+    //
+    // [11] “Nigerian Railway Spends About N4 Million On Diesel Alone Daily ...”
+    //      (media report; diesel use on main line)
+    //      https://www.facebook.com/photo.php?fbid=2111280142377168&id=1081062912065568&set=a.1104576799714179
+    //
+    // [12] “Energy Consumption in Transport Sector in Nigeria: Current Situation and Ways Forward”
+    //      (ResearchGate)
+    //      https://www.researchgate.net/publication/286928670_Energy_Consumption_in_Transport_Sector_in_Nigeria_Current_Situation_and_Ways_Forward
+
+
+    Brazil: {
+      electricity: {
+        existingCarbonFreeElectricity: 620,
+        // ~620 TWh/yr from carbon-free sources (hydro, wind, solar, nuclear, etc.) in 2022 [1][2][4][5]
+
+        existingGasElectricity: 42,
+        // ~42 TWh/yr from natural gas in 2022 [4][5]
+
+        existingCoalElectricity: 8,
+        // ~8 TWh/yr from coal in 2022 [4][5]
+
+        currentWindCapacityGW: 33.7,
+        // ~33.7 GW installed wind power capacity (approx. end of 2024) [3][4][5]
+
+        currentSolarCapacityGW: 35.7,
+        // ~35.7 GW installed solar power capacity (utility + distributed, ~2023) [1][4][5]
+
+        lowDemandGW: 45,
+        // ~45 GW estimated lowest system demand (overnight off-peak)
+
+        lowDemandDuringDayGW: 55
+        // ~55 GW estimated lowest daytime demand (with solar contribution)
+      },
+
+      heat: {
+        residentialHeat: 210,
+        // ~210 TWh/yr final energy for residential heating/cooking (electricity, LPG, biomass) [5]
+
+        industryHeat: 840
+        // ~840 TWh/yr final energy for industrial process heat (all fuels) [5]
+      },
+
+      // Default wind/solar capacity mix ratio in model (90% wind, 10% solar)
+      windSolarRatio: 90,
+
+      roadTransport: {
+        cars: {
+          numVehicles: 38400000,
+          // ~38.4 million cars in circulation (2023) [6]
+
+          distance: 10000,          // km per car per year
+          kWhPerKm: 0.19,           // assumed electric consumption
+          totalElectricity: 0,
+          emissionsPerKm: 120       // gCO2/km tailpipe for cars (avg, approx.)
+        },
+
+        busesSmall: {
+          numVehicles: 100000,
+          // ~100k small buses/minibuses (subset of total buses, est.)
+
+          distance: 30000,          // km per year
+          kWhPerKm: 1.0,            // kWh/km for electric minibus (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 500       // gCO2/km diesel minibus (approx.)
+        },
+
+        busesLarge: {
+          numVehicles: 290000,
+          // ~290k large buses (city + intercity) – subset of ~388.9k total buses [6]
+
+          distance: 60000,          // km per year
+          kWhPerKm: 1.5,            // kWh/km for large e-bus (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 1000      // gCO2/km diesel bus (approx.)
+        },
+
+        lightGoods: {
+          numVehicles: 6200000,
+          // ~6.2 million light commercial vehicles (vans, pickups) in 2023 [6]
+
+          distance: 15000,          // km per year
+          kWhPerKm: 0.3,            // kWh/km for electric van (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 250       // gCO2/km diesel/gasoline van (approx.)
+        },
+
+        heavyGoods: {
+          numVehicles: 2200000,
+          // ~2.2 million heavy goods vehicles (trucks) in 2023 [6]
+
+          distance: 50000,          // km per year
+          kWhPerKm: 1.5,            // kWh/km for heavy e-truck (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 1000      // gCO2/km diesel truck (approx.)
+        },
+
+        tractors: {
+          numVehicles: 1300000,
+          // ~1.3 million agricultural tractors (~1.23M in 2017 census, rounded) [7]
+
+          distance: 3000,           // equivalent km per year (estimated)
+          kWhPerKm: 2.0,            // kWh/km for electric tractor (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 800       // gCO2/km diesel tractor (rough estimate)
+        },
+
+        motorcycles: {
+          numVehicles: 13260000,
+          // ~13.26 million motorcycles in circulation (2023) [6]
+
+          distance: 5000,           // km per year
+          kWhPerKm: 0.06,           // kWh/km for electric motorcycle (assumed)
+          totalElectricity: 0,
+          emissionsPerKm: 80        // gCO2/km gasoline motorcycle (approx.)
+        },
+
+        other: {
+          numVehicles: 500000,
+          // ~500k other vehicles (ATVs, micro-cars, special vehicles) – estimated
+
+          distance: 5000,           // km per year
+          kWhPerKm: 0.2,            // kWh/km (assumed avg)
+          totalElectricity: 0,
+          emissionsPerKm: 200       // gCO2/km mixed fleet (approx.)
+        }
+      },
+
+      railDiesel: 960000000,
+      // ~960 million litres diesel consumed by rail transport per year (~2% of diesel use) [5][8]
+
+      shippingDiesel: 480000000
+      // ~480 million litres diesel for domestic shipping per year (~1% of diesel use) [5][8]
+    },
+
+    // [1] “Brasil teve maior queda do mundo em emissões do setor elétrico em 2022”
+    //     Canal Solar
+    //     https://canalsolar.com.br/brasil-teve-maior-queda-do-mundo-em-emissoes-do-setor-eletrico-em-2022/
+    //
+    // [2] Newton Duarte – “Cogeração de energia ajuda país a enfrentar períodos de seca”
+    //     https://www.poder360.com.br/opiniao/cogeracao-de-energia-ajuda-pais-a-enfrentar-periodos-de-seca/
+    //
+    // [3] “Brasil é o 5º em ranking mundial de capacidade de energia eólica em terra”
+    //     https://amazonasatual.com.br/brasil-e-o-5o-em-ranking-mundial-de-capacidade-de-energia-eolica-em-terra/
+    //
+    // [4] Electricity sector in Brazil – Wikipedia
+    //     https://en.wikipedia.org/wiki/Electricity_sector_in_Brazil
+    //
+    // [5] IEA Bioenergy – Country Report 2024: Brazil
+    //     https://www.ieabioenergy.com/wp-content/uploads/2024/12/CountryReport2024_Brazil_final.pdf
+    //
+    // [6] “Frota circulante” – Sindipeças (vehicle fleet statistics, Brazil)
+    //     https://www.sindipecas.org.br/sindinews/Economia/2024/Frota_Circulante.pdf
+    //
+    // [7] Ministério da Agricultura e Pecuária – agricultural machinery / tractor statistics
+    //     https://www.gov.br/agricultura/pt-br/assuntos/inovacao/idagro
+    //
+    // [8] “A atividade de transportes consome mais de 80% do óleo diesel ...”
+    //     (diesel use share in transport)
+    //     https://www.instagram.com/p/DNBHH9RTw3p/
+
+    Australia: {
+      electricity: {
+        existingCarbonFreeElectricity: 102.4,
+        // ~102.4 TWh carbon-free generation (renewables ~36% of 284 TWh in 2024) [1][2][6]
+
+        existingGasElectricity: 48.3,
+        // ~48.3 TWh from gas (~17% of generation in 2024) [1][2]
+
+        existingCoalElectricity: 127.8,
+        // ~127.8 TWh from coal (~45% of generation in 2024) [1][2]
+
+        currentWindCapacityGW: 13.3,
+        // ~13.3 GW installed wind capacity (east & south grids, ~12–14 GW nationally) [3][5]
+
+        currentSolarCapacityGW: 41.8,
+        // ~41.8 GW solar PV (rooftop + utility) as of June 2025 [4]
+
+        lowDemandGW: 10.1,
+        // ~10.1 GW record low operational demand (midday, Oct 2024) [5]
+
+        lowDemandDuringDayGW: 10.1
+        // Same record low daytime trough — daytime demand now < overnight demand [5]
+      },
+
+      heat: {
+        residentialHeat: 85,
+        // ~85 TWh residential heating energy (space + water heating ~62% of household energy) [7]
+
+        industryHeat: 234
+        // ~234 TWh industrial process heat (~842 PJ; ~42% of industrial energy) [7]
+      },
+
+      windSolarRatio: 90,
+      // Default assumed wind/solar ratio for new capacity (placeholder)
+
+      roadTransport: {
+        cars: {
+          numVehicles: 15325339,
+          // ~15.3 million passenger vehicles (2023) [8]
+
+          distance: 11100,         // km/year per car (national average) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 180      // gCO2/km (avg ICE car emissions) [10]
+        },
+
+        busesSmall: {
+          numVehicles: 40000,
+          // ~40k small buses (subset of ~98k total buses in 2023) [8]
+
+          distance: 15000,         // km/year (light-duty mini-bus usage) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 500      // gCO2/km diesel minibuses (approx.)
+        },
+
+        busesLarge: {
+          numVehicles: 60000,
+          // ~60k large buses (city + intercity, remainder from ~98k) [8]
+
+          distance: 40000,         // km/year (urban & intercity buses) [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1100     // gCO2/km diesel bus (~40 L/100 km) [10]
+        },
+
+        lightGoods: {
+          numVehicles: 3930000,
+          // ~3.93 million light commercials (utes/vans) [8]
+
+          distance: 15300,         // km/year [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 250      // gCO2/km diesel LDVs [10]
+        },
+
+        heavyGoods: {
+          numVehicles: 600000,
+          // ~600k freight trucks (rigid + articulated; ~592k rigid, ~105k artics) [8]
+
+          distance: 30000,         // weighted average (rigids ~21k, artics ~78k) [9][12]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1300     // gCO2/km (~50 L/100 km ≈ 1350 g/km) [10][12]
+        },
+
+        tractors: {
+          numVehicles: 100000,
+          // ~100k agricultural tractors (rough estimate) [12]
+
+          distance: 3000,          // km/year equivalent (mostly off-road use)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1500     // gCO2/km heavy diesel, low-speed usage (est.)
+        },
+
+        motorcycles: {
+          numVehicles: 957693,
+          // ~0.96 million motorcycles (2023) [8]
+
+          distance: 1900,          // km/year average motorcycle use [9]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 100      // gCO2/km average motorcycle [10]
+        },
+
+        other: {
+          numVehicles: 230000,
+          // ~230k other vehicles (ATVs, forklifts, plant, misc.) [12]
+
+          distance: 2000,
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 600      // gCO2/km mixed fleet, approximate
+        }
+      },
+
+      railDiesel: 1000000000,
+      // ~1.0 billion litres diesel used by rail (freight + regional). Rail used ~533M L in 2000–01; 
+      // has since grown with freight task. [12]
+
+      shippingDiesel: 500000000
+      // ~0.5 billion litres diesel for domestic shipping (coastal freight, ferries) — rough estimate.
+    },
+    // [1] Australian Energy Statistics – Table O (Electricity generation by fuel type, 2023–24 & 2024)
+    //     https://www.energy.gov.au/publications/australian-energy-statistics-table-o-electricity-generation-fuel-type-2023-24-and-2024
+    //
+    // [2] Electricity generation – energy.gov.au
+    //     https://www.energy.gov.au/energy-data/australian-energy-statistics/electricity-generation
+    //
+    // [3] Wind power in Australia – Wikipedia
+    //     https://en.wikipedia.org/wiki/Wind_power_in_Australia
+    //
+    // [4] Solar power in Australia – Wikipedia
+    //     https://en.wikipedia.org/wiki/Solar_power_in_Australia
+    //
+    // [5] AEMO Quarterly Energy Dynamics (Q4 2024) – record low demand
+    //     https://www.aemo.com.au/-/media/files/major-publications/qed/2024/qed-q4-2024.pdf
+    //
+    // [6] IEA – Australia 2023 Energy Policy Review
+    //     https://iea.blob.core.windows.net/assets/02a7a120-564b-4057-ac6d-cf21587a30d9/Australia2023EnergyPolicyReview.pdf
+    //
+    // [7] CSIRO / ITP – Industrial Process Heat Market in Australia (SolarPACES)
+    //     https://www.solarpaces.org/wp-content/uploads/2025/04/Australian-Industrial-Process-Heat-Market-CSIRO-ITP.pdf
+    //
+    // [8] BITRE – Road Vehicles Australia (2023 re-issue / 2024 update)
+    //     https://www.bitre.gov.au/sites/default/files/documents/BITRE-Road-Vehicles-Australia-January-2023-Re-Issue.pdf
+    //
+    // [9] ABS – Survey of Motor Vehicle Use (SMVU)
+    //     https://www.abs.gov.au/statistics/industry/tourism-and-transport/survey-motor-vehicle-use-australia/latest-release
+    //
+    // [10] Australian Green Vehicle Guide – Vehicle emissions
+    //      https://www.greenvehicleguide.gov.au/pages/UnderstandingEmissions/VehicleEmissions
+    //
+    // [12] Australasian Transport Research Forum – “Australia’s Transport Tasks”
+    //      https://australasiantransportresearchforum.org.au/wp-content/uploads/2022/03/2003_Laird.pdf
+
+
+    US: {
+      electricity: {
+        existingCarbonFreeElectricity: 1742,
+        // ~1742 TWh (2023) from nuclear + renewables, incl. ~74 TWh small-scale solar [1][2][3][4]
+
+        existingGasElectricity: 1802,
+        // ~1802 TWh (2023) generated from natural gas [1][3][4]
+
+        existingCoalElectricity: 675,
+        // ~675 TWh (2023) generated from coal [1][3][4]
+
+        currentWindCapacityGW: 147.5,
+        // ~147.5 GW installed wind capacity at end of 2023 [2][3]
+
+        currentSolarCapacityGW: 139,
+        // ~139 GW installed solar PV capacity at end of 2023 (utility + small-scale) [2]
+
+        lowDemandGW: 300,
+        // ~300 GW approximate lowest nationwide overnight demand (assumption)
+
+        lowDemandDuringDayGW: 350
+        // ~350 GW approximate lowest daytime demand on the grid (assumption)
+      },
+
+      heat: {
+        residentialHeat: 1200,
+        // ~1200 TWh/yr estimated residential space-heating energy (~34% of home energy use) [1][5]
+
+        industryHeat: 5700
+        // ~5700 TWh/yr estimated industrial process heat (~70% of industrial energy use) [1][5]
+      },
+
+      // Default assumed contribution split for wind + solar (model placeholder)
+      windSolarRatio: 90,
+
+      roadTransport: {
+        cars: {
+          numVehicles: 242000000,
+          // ~242 million passenger vehicles (cars/SUVs/light-duty used for personal transport, 2021) [6][7]
+
+          distance: 17000,        // km/year per car (~10.5k miles/year) [7]
+          kWhPerKm: 0.19,         // EV energy use factor (kWh/km)
+          totalElectricity: 0,
+          emissionsPerKm: 250     // gCO2/km (~400 g/mi average gasoline car) [8]
+        },
+
+        busesSmall: {
+          numVehicles: 300000,
+          // ~0.3 million small buses (school/shuttle; subset of ~0.94M total buses) [6]
+
+          distance: 25000,        // km/year (~15k miles/year for school/shuttle buses) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 900     // gCO2/km diesel school bus (~7 mpg) [8]
+        },
+
+        busesLarge: {
+          numVehicles: 639000,
+          // ~0.64 million large buses (city transit + coaches; total buses ~939k) [6]
+
+          distance: 60000,        // km/year (~37k miles/year transit/coach buses) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1500    // gCO2/km diesel transit bus (~4 mpg) [8]
+        },
+
+        lightGoods: {
+          numVehicles: 16000000,
+          // ~16 million light goods vehicles (vans/pickups in commercial use) [6][7]
+
+          distance: 20000,        // km/year (~12k miles/year) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 300     // gCO2/km typical gasoline van/pickup [8]
+        },
+
+        heavyGoods: {
+          numVehicles: 10700000,
+          // ~10.7 million heavy-duty single-unit trucks (>10,000 lb GVW) [6][7]
+
+          distance: 20000,        // km/year (~12k miles/year) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 800     // gCO2/km diesel heavy truck (duty-cycle dependent) [8]
+        },
+
+        tractors: {
+          numVehicles: 3143000,
+          // ~3.14 million truck tractors (articulated semi-truck units) [6]
+
+          distance: 100000,       // km/year (~62k miles/year for long-haul semi) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // gCO2/km diesel semi-truck (~6 mpg) [8]
+        },
+
+        motorcycles: {
+          numVehicles: 8500000,
+          // ~8.5 million on-road motorcycles in use (2021) [7]
+
+          distance: 5000,         // km/year (~3k miles/year; declining usage) [7]
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 100     // gCO2/km (~100–150 g/km depending on engine size) [8]
+        },
+
+        other: {
+          numVehicles: 1000000,
+          // ~1 million other road vehicles (RVs, emergency, special-use; approx.) [6]
+
+          distance: 5000,         // km/year (assumed low usage)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // gCO2/km (assumed heavy/mixed fleet average)
+        }
+      },
+
+      railDiesel: 14000000000,
+      // ~14 billion litres/year diesel for rail transport (Class I freight ~13.5B L/yr) [9]
+
+      shippingDiesel: 15000000000
+      // ~15 billion litres/year diesel & bunker fuel for domestic shipping (order-of-magnitude est.) [1]
+    },
+
+  // [1] U.S. EIA – Frequently Asked Questions & national energy data (generation by fuel)
+  //     https://www.eia.gov/tools/faqs/faq.php?id=427&t=3
+  //
+  // [2] Climate Central – “A Decade of Growth in Solar and Wind Power: Trends Across the U.S.”
+  //     https://www.climatecentral.org/report/solar-and-wind-power-2024
+  //
+  // [3] EIA – “Wind generation declined in 2023 for the first time since the 1990s”
+  //     https://www.eia.gov/todayinenergy/detail.php?id=61943
+  //
+  // [4] Energy in the United States – Wikipedia (overview of generation mix and totals)
+  //     https://en.wikipedia.org/wiki/Energy_in_the_United_States
+  //
+  // [5] Southwest Energy Efficiency Project – “Electrification of industrial process heating”
+  //     https://www.swenergy.org/electrification-of-industrial-process-heating/
+  //
+  // [6] FMCSA – “Pocket Guide to Large Truck and Bus Statistics 2023”
+  //     https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2024-04/FMCSA%20Pocket%20Guide%202023-FINAL%20508%20-%20April%202024.pdf
+  //
+  // [7] U.S. DOE / AFDC – “Average Annual Vehicle Miles Traveled by Major Vehicle Category”
+  //     https://afdc.energy.gov/data/10309
+  //
+  // [8] U.S. EPA – “Greenhouse Gas Emissions from a Typical Passenger Vehicle”
+  //     https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100JPPH.TXT
+  //
+  // [9] BTS – “Table 4-17M: Class I Rail Freight Fuel Consumption and Travel”
+  //     https://www.bts.gov/archive/publications/national_transportation_statistics/2010/table_04_17m
+
+
+
+
+
   };
 
   // Calculate total electricity for all roadTransport categories
@@ -1013,7 +1930,22 @@ function App() {
               onChange={handleCountryChange}
               className="country-dropdown"
             >
-              <option value="Ireland">Ireland</option>
+
+            <option value="Australia">Australia</option>
+
+            <option value="Brazil">Brazil</option>
+
+            <option value="Ireland">Ireland</option>
+
+            <option value="Nigeria">Nigeria</option>
+
+            <option value="Spain">Spain</option>
+
+            <option value="UK">UK</option>
+
+            <option value="US">US</option>
+
+              
               <option value="">No Country</option>
             </select>
 
