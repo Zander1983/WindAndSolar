@@ -1838,7 +1838,7 @@ function App() {
               margin: "0",
             }}
           >
-            Wind and Solar Calculator
+            Net Zero Calculator
           </h1>
           <p
             style={{
