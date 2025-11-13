@@ -882,6 +882,24 @@ function App() {
     ].filter((dataset) => dataset.data.some((value) => value > 0)), // Only include datasets with data > 0
   };
 
+    const existingCarbonFreeTWh =
+    (processedData?.datasets?.[0]?.data?.[0] || 0);
+
+  const requiredCarbonFreeTWh = processedData?.datasets
+    ? processedData.datasets.reduce((acc, dataset) => {
+        const value = Number(dataset?.data?.[1]) || 0;
+        return acc + value;
+      }, 0)
+    : 0;
+
+  const progressToNetZero =
+    requiredCarbonFreeTWh > 0
+      ? (existingCarbonFreeTWh / requiredCarbonFreeTWh) * 100
+      : 0;
+
+  const progressLabel = selectedCountry || "This country";
+
+
   return (
     <div className="App">
       <div
@@ -979,21 +997,55 @@ function App() {
         <label htmlFor="country-select" className="dropdown-label">
           Select Country or enter your own data for a country:
         </label>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <select
-            id="country-select"
-            value={selectedCountry}
-            onChange={handleCountryChange}
-            className="country-dropdown"
+
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
           >
-            <option value="Ireland">Ireland</option>
-            <option value="">No Country</option>
-          </select>
-          {/* Add the Clear button */}
-          <button onClick={handleClearCountry} className="clear-button">
-            Clear
-          </button>
-        </div>
+            <select
+              id="country-select"
+              value={selectedCountry}
+              onChange={handleCountryChange}
+              className="country-dropdown"
+            >
+              <option value="Ireland">Ireland</option>
+              <option value="">No Country</option>
+            </select>
+
+            <button onClick={handleClearCountry} className="clear-button">
+              Clear
+            </button>
+
+            {/* 🔹 Compact progress badge beside Clear */}
+            {requiredCarbonFreeTWh > 0 && (
+              <div
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: "999px",
+                  background:
+                    "linear-gradient(135deg, rgba(0,123,255,0.1), rgba(0,188,212,0.2))",
+                  border: "1px solid #00BCD4",
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                  color: "#005b73",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {progressLabel} is{" "}
+                {Number.isFinite(progressToNetZero)
+                  ? progressToNetZero.toFixed(1)
+                  : "0.0"}
+                % to Net Zero
+              </div>
+            )}
+          </div>
+
+
       </div>
 
       <div
@@ -1932,6 +1984,28 @@ function App() {
               })()}
               TWh
             </p>
+
+          {/* 🔷 NEW PROMINENT BOX 🔷 */}
+          <div
+            style={{
+              marginTop: "10px",
+              padding: "15px 20px",
+              borderRadius: "10px",
+              background: "linear-gradient(135deg, #003366, #00BCD4)",
+              color: "#FFFFFF",
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              textAlign: "center",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            {progressLabel} is{" "}
+            {Number.isFinite(progressToNetZero)
+              ? progressToNetZero.toFixed(1)
+              : "0.0"}
+            % to Net Zero.
+            </div>
+
             <h2 style={{ marginBottom: 0 }}>Emissions</h2>
             <Bar
               data={emissionsData}
