@@ -1328,32 +1328,238 @@ function App() {
       // ~15 billion litres/year diesel & bunker fuel for domestic shipping (order-of-magnitude est.) [1]
     },
 
-  // [1] U.S. EIA – Frequently Asked Questions & national energy data (generation by fuel)
-  //     https://www.eia.gov/tools/faqs/faq.php?id=427&t=3
-  //
-  // [2] Climate Central – “A Decade of Growth in Solar and Wind Power: Trends Across the U.S.”
-  //     https://www.climatecentral.org/report/solar-and-wind-power-2024
-  //
-  // [3] EIA – “Wind generation declined in 2023 for the first time since the 1990s”
-  //     https://www.eia.gov/todayinenergy/detail.php?id=61943
-  //
-  // [4] Energy in the United States – Wikipedia (overview of generation mix and totals)
-  //     https://en.wikipedia.org/wiki/Energy_in_the_United_States
-  //
-  // [5] Southwest Energy Efficiency Project – “Electrification of industrial process heating”
-  //     https://www.swenergy.org/electrification-of-industrial-process-heating/
-  //
-  // [6] FMCSA – “Pocket Guide to Large Truck and Bus Statistics 2023”
-  //     https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2024-04/FMCSA%20Pocket%20Guide%202023-FINAL%20508%20-%20April%202024.pdf
-  //
-  // [7] U.S. DOE / AFDC – “Average Annual Vehicle Miles Traveled by Major Vehicle Category”
-  //     https://afdc.energy.gov/data/10309
-  //
-  // [8] U.S. EPA – “Greenhouse Gas Emissions from a Typical Passenger Vehicle”
-  //     https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100JPPH.TXT
-  //
-  // [9] BTS – “Table 4-17M: Class I Rail Freight Fuel Consumption and Travel”
-  //     https://www.bts.gov/archive/publications/national_transportation_statistics/2010/table_04_17m
+    // [1] U.S. EIA – Frequently Asked Questions & national energy data (generation by fuel)
+    //     https://www.eia.gov/tools/faqs/faq.php?id=427&t=3
+    //
+    // [2] Climate Central – “A Decade of Growth in Solar and Wind Power: Trends Across the U.S.”
+    //     https://www.climatecentral.org/report/solar-and-wind-power-2024
+    //
+    // [3] EIA – “Wind generation declined in 2023 for the first time since the 1990s”
+    //     https://www.eia.gov/todayinenergy/detail.php?id=61943
+    //
+    // [4] Energy in the United States – Wikipedia (overview of generation mix and totals)
+    //     https://en.wikipedia.org/wiki/Energy_in_the_United_States
+    //
+    // [5] Southwest Energy Efficiency Project – “Electrification of industrial process heating”
+    //     https://www.swenergy.org/electrification-of-industrial-process-heating/
+    //
+    // [6] FMCSA – “Pocket Guide to Large Truck and Bus Statistics 2023”
+    //     https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2024-04/FMCSA%20Pocket%20Guide%202023-FINAL%20508%20-%20April%202024.pdf
+    //
+    // [7] U.S. DOE / AFDC – “Average Annual Vehicle Miles Traveled by Major Vehicle Category”
+    //     https://afdc.energy.gov/data/10309
+    //
+    // [8] U.S. EPA – “Greenhouse Gas Emissions from a Typical Passenger Vehicle”
+    //     https://nepis.epa.gov/Exe/ZyPURL.cgi?Dockey=P100JPPH.TXT
+    //
+    // [9] BTS – “Table 4-17M: Class I Rail Freight Fuel Consumption and Travel”
+    //     https://www.bts.gov/archive/publications/national_transportation_statistics/2010/table_04_17m
+
+
+    Germany : {
+      electricity: {
+        existingCarbonFreeElectricity: 289.4, // renewable (254.7 TWh) + nuclear (34.7 TWh) generation (2022)
+        existingGasElectricity: 79.0,        // natural gas generation (79.0 TWh in 2022)
+        existingCoalElectricity: 179.9,      // lignite + hard coal generation (116.2 + 63.7 = 179.9 TWh in 2022)
+        currentWindCapacityGW: 72.7,         // ~63.5 GW onshore + 9.2 GW offshore (2024/2025)
+        currentSolarCapacityGW: 100.0,       // ~100 GW PV total capacity (as of end-2024)
+        lowDemandGW: 0,                      // (no data found)
+        lowDemandDuringDayGW: 0              // (no data found)
+      },
+
+      heat: {
+        residentialHeat: 658.0, // final energy for household heating (~658 TWh)
+        industryHeat: 654.0     // final energy for industrial heating (~654 TWh)
+      },
+
+      windSolarRatio: 90, // assumed default wind:solar ratio (90:10) in energy mix
+
+      roadTransport: {
+        cars: {
+          numVehicles: 49e6,     // ~49 million passenger cars (2024)
+          distance: 15000,       // ~15,000 km/year per car (typical annual mileage)
+          kWhPerKm: 0.19,        // assumed EV consumption (0.19 kWh/km)
+          totalElectricity: 0,   // (to be calculated)
+          emissionsPerKm: 140    // ~140 gCO₂/km (fleet-average ICE cars, estimate)
+        },
+        busesSmall: {
+          numVehicles: 1e4,      // ~10,000 small buses (minibuses, estimate)
+          distance: 30000,       // ~30,000 km/year per small bus (estimate)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 900    // ~900 gCO₂/km (diesel minibus, estimate)
+        },
+        busesLarge: {
+          numVehicles: 8.0e4,    // ~80,000 large buses/coaches (2021)
+          distance: 20000,       // ~20,000 km/year per large bus (urban/coach average)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 1100   // ~1100 gCO₂/km (diesel coach/bus, estimate)
+        },
+        lightGoods: {
+          numVehicles: 3.14e6,   // ~3.14 million vans (light commercial vehicles, 2021)
+          distance: 20000,       // ~20,000 km/year per van
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 220    // ~220 gCO₂/km (diesel van, estimate)
+        },
+        heavyGoods: {
+          numVehicles: 0.965e6,  // ~965,000 trucks (heavy goods, 2021)
+          distance: 50000,       // ~50,000 km/year per truck (long-haul avg)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 900    // ~900 gCO₂/km (diesel truck, estimate)
+        },
+        tractors: {
+          numVehicles: 0.4e6,    // ~400,000 agricultural tractors (estimate)
+          distance: 5000,        // ~5,000 km/year per tractor (agricultural use)
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 3000   // ~3,000 gCO₂/km (diesel tractor, estimate)
+        },
+        motorcycles: {
+          numVehicles: 2.35e6,   // ~2.35 million motorcycles/mopeds (2021)
+          distance: 3000,        // ~3,000 km/year per motorcycle
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 100    // ~100 gCO₂/km (gasoline motorcycle, estimate)
+        },
+        other: {
+          numVehicles: 0,        // other vehicle types (not specified)
+          distance: 0,
+          kWhPerKm: 0.19,
+          totalElectricity: 0,
+          emissionsPerKm: 0
+        }
+      },
+
+      railDiesel: 1.80e8, // ~180 million litres diesel (DB: 19M l HVO = 9.6% of fuel ≈198M total)
+      shippingDiesel: 0   // (no data found, placeholder)
+    },
+
+
+    // Sources (for reference only):
+    // - Gross electricity production in Germany - German Federal Statistical Office
+    //   https://www.destatis.de/EN/Themes/Economic-Sectors-Enterprises/Energy/Production/Tables/gross-electricityproduction.html
+    // - Statistics Germany | BWE e.V.
+    //   https://www.wind-energie.de/english/statistics/statistics-germany/
+    // - Status of Offshore Wind Energy Development in Germany | German OFFSHORE-WINDENERGY Foundation
+    //   http://www.offshore-stiftung.de/en/status-quo-offshore-windenergy.php
+    // - German solar capacity breaches 100 gigawatts – industry association | Clean Energy Wire
+    //   https://www.cleanenergywire.org/news/german-solar-capacity-breaches-100-gigawatts-industry-association
+    // - Focus on Heating
+    //   https://www.pwc.de/de/energiewirtschaft/pwc-energiewende-tracker-fokus-waerme.pdf
+    // - Passenger cars in the EU - Statistics Explained - Eurostat
+    //   https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Passenger_cars_in_the_EU
+    // - ACEA report: Vehicles in use Europe 2023
+    //   https://www.acea.auto/files/ACEA-report-vehicles-in-use-europe-2023.pdf
+    // - Diesel phase-out | Deutsche Bahn Annual Report 2024
+    //   https://ibir.deutschebahn.com/2024/en/combined-management-report/green-transformation/climate-protection/dieselphase-out/
+
+    // Canada energy and transport data
+    Canada: {
+      electricity: {
+        existingCarbonFreeElectricity: 517.3, // TWh (2022: ~61.3% hydro + 12.9% nuclear + 6.1% wind + 0.5% solar of 640.3 TWh total)
+        existingGasElectricity: 58.4,        // TWh (approx 10% of 584 TWh total generation)
+        existingCoalElectricity: 23.4,       // TWh (approx 4% of 584 TWh total generation)
+        currentWindCapacityGW: 18.0,         // GW (installed wind capacity ≈18 GW as of 2023)
+        currentSolarCapacityGW: 3.6,         // GW (≈2.4 GW utility-scale + 1.2 GW rooftop solar)
+        lowDemandGW: 40,                     // GW (approx national off-peak demand, estimate)
+        lowDemandDuringDayGW: 60             // GW (approx midday low demand, estimate)
+      },
+
+      heat: {
+        residentialHeat: 196, // TWh (NatGas + heating oil in homes: ~54.2% of 1.3 million TJ energy use)
+        industryHeat: 95      // TWh (NatGas in industry: ~9.0 Bcf/d ≈ 95 TWh/yr)
+      },
+
+      windSolarRatio: 90, // % (default wind:solar generation ratio)
+
+      roadTransport: {
+        cars: {
+          numVehicles: 8614532,   // passenger cars (~8.6M; 36.5% of 23.6M LDVs in 2023)
+          distance: 15000,        // km/year
+          kWhPerKm: 0.19,         // EV energy use
+          totalElectricity: 0,
+          emissionsPerKm: 150     // g CO₂/km (ICE average)
+        },
+        busesSmall: {
+          numVehicles: 15000,     // estimate
+          distance: 30000,        // km/year
+          kWhPerKm: 2.0,          // EV bus energy
+          totalElectricity: 0,
+          emissionsPerKm: 800     // g CO₂/km
+        },
+        busesLarge: {
+          numVehicles: 20000,     // estimate
+          distance: 30000,        // km/year
+          kWhPerKm: 2.5,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // g CO₂/km
+        },
+        lightGoods: {
+          numVehicles: 6500000,   // ~6.5M
+          distance: 30000,        // km/year
+          kWhPerKm: 0.3,
+          totalElectricity: 0,
+          emissionsPerKm: 250     // g CO₂/km
+        },
+        heavyGoods: {
+          numVehicles: 1000000,   // ~1M heavy trucks
+          distance: 50000,        // km/year
+          kWhPerKm: 1.2,
+          totalElectricity: 0,
+          emissionsPerKm: 900     // g CO₂/km
+        },
+        tractors: {
+          numVehicles: 659337,    // farm tractors (2021)
+          distance: 2000,         // km/year
+          kWhPerKm: 0.5,
+          totalElectricity: 0,
+          emissionsPerKm: 1000    // g CO₂/km
+        },
+        motorcycles: {
+          numVehicles: 829892,    // motorcycles/mopeds (2022)
+          distance: 5000,         // km/year
+          kWhPerKm: 0.07,
+          totalElectricity: 0,
+          emissionsPerKm: 120     // g CO₂/km
+        },
+        other: {
+          numVehicles: 100000,    // estimate
+          distance: 10000,        // km/year
+          kWhPerKm: 0.3,
+          totalElectricity: 0,
+          emissionsPerKm: 200     // g CO₂/km
+        }
+      },
+
+      railDiesel: 2000000000,  // litres (≈2.0×10^9 L in 2021)
+      shippingDiesel: 3000000000 // litres (marine diesel estimate)
+    }
+
+    // Sources (for reference only):
+    // - Canada Energy Overview — trade.gov
+    //   https://www.trade.gov/country-commercial-guides/canada-energy
+    // - Canada's clean electricity future — Canada.ca
+    //   https://www.canada.ca/en/services/environment/weather/climatechange/climate-plan/clean-electricity.html
+    // - Onshore wind energy analysis — climateinstitute.ca
+    //   https://climateinstitute.ca/safe-bets-wild-cards/onshore-wind-energy/
+    // - Renewable growth 2023 — Canadian Renewable Energy Association
+    //   https://renewablesassociation.ca/news-release-new-2023-data-shows-11-2-growth-for-wind-solar-energy-storage/
+    // - Households & Environment Survey 2021 — StatCan
+    //   https://www150.statcan.gc.ca/n1/daily-quotidien/240319/dq240319d-eng.htm
+    // - CER Energy Profiles — CER
+    //   https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/provincial-territorial-energy-profiles/provincial-territorial-energyprofiles-canada.html
+    // - Vehicle registrations 2023 — StatCan
+    //   https://www150.statcan.gc.ca/n1/daily-quotidien/241021/dq241021c-eng.htm
+    // - Motorcycles 2022 — Statistics Canada
+    //   https://www.statcan.gc.ca/o1/en/plus/5335-more-motorcycles-mopeds-canadian-roads-2022
+    // - Rail Trends 2022 — railcan.ca
+    //   https://www.railcan.ca/wp-content/uploads/2023/01/SPARK-RAC-RAIL-TRENDS-2022-EN8-1.pdf
+
+
+
 
 
 
@@ -1934,6 +2140,10 @@ function App() {
             <option value="Australia">Australia</option>
 
             <option value="Brazil">Brazil</option>
+
+            <option value="Canada">Canada</option>
+
+            <option value="Germany">Germany</option>
 
             <option value="Ireland">Ireland</option>
 
