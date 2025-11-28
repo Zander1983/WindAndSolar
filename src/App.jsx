@@ -2878,133 +2878,174 @@ function App() {
               backgroundColor: "#f9f9f9",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ margin: 0 }}>Storage Settings</h2>
-              <label
+        
+
+
+              <div
                 style={{
-                  cursor: "pointer",
                   display: "flex",
+                  justifyContent: "space-between",
                   alignItems: "center",
+                  marginBottom: "20px",
                 }}
               >
-                <span
+                <h2 style={{ margin: 0 }}>Storage Settings</h2>
+                <label
                   style={{
-                    display: "inline-block",
-                    width: "40px",
-                    height: "20px",
-                    borderRadius: "20px",
-                    backgroundColor: includeStorage ? "#4caf50" : "#ccc",
-                    position: "relative",
-                    transition: "background-color 0.3s",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <span
                     style={{
-                      position: "absolute",
-                      top: "2px",
-                      left: includeStorage ? "22px" : "2px",
-                      width: "16px",
-                      height: "16px",
-                      borderRadius: "50%",
-                      backgroundColor: "#fff",
-                      transition: "left 0.3s",
+                      display: "inline-block",
+                      width: "40px",
+                      height: "20px",
+                      borderRadius: "20px",
+                      backgroundColor: includeStorage ? "#4caf50" : "#ccc",
+                      position: "relative",
+                      transition: "background-color 0.3s",
                     }}
-                  ></span>
-                </span>
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: includeStorage ? "22px" : "2px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        backgroundColor: "#fff",
+                        transition: "left 0.3s",
+                      }}
+                    ></span>
+                  </span>
 
-                <input
-                  type="checkbox"
-                  checked={includeStorage}
-                  onChange={(e) => setIncludeStorage(e.target.checked)}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
-
-            {includeStorage && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 3fr",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <label style={{ textAlign: "left" }}>
-                  Typical Current Low Power Demand At Night (GW):
+                  <input
+                    type="checkbox"
+                    checked={includeStorage}
+                    onChange={(e) => setIncludeStorage(e.target.checked)}
+                    style={{ display: "none" }}
+                  />
                 </label>
-                <input
-                  type="number"
-                  value={formData.electricity.lowDemandGW}
-                  onChange={(e) =>
-                    handleChange(e, "lowDemandGW", "electricity")
-                  }
-                  style={{
-                    padding: "8px",
-                    borderRadius: "5px",
-                    border: "1px solid #CCC",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <label style={{ textAlign: "left" }}>
-                  Typical Current Low Power Demand During Day (GW):
-                </label>
-                <input
-                  type="number"
-                  value={formData.electricity.lowDemandDuringDayGW}
-                  onChange={(e) =>
-                    handleChange(e, "lowDemandDuringDayGW", "electricity")
-                  }
-                  style={{
-                    padding: "8px",
-                    borderRadius: "5px",
-                    border: "1px solid #CCC",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <label style={{ textAlign: "left" }}>
-                  Height Between Upper and Lower Lake (m):
-                </label>
-                <input
-                  type="number"
-                  value={lakeHeightDifference}
-                  onChange={(e) =>
-                    setLakeHeightDifference(parseFloat(e.target.value))
-                  }
-                  style={{
-                    padding: "8px",
-                    borderRadius: "5px",
-                    border: "1px solid #CCC",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <label style={{ textAlign: "left" }}>
-                  Number of Storage Days:
-                </label>
-                <input
-                  type="number"
-                  value={storageDuration}
-                  onChange={(e) => setStorageDuration(parseFloat(e.target.value))}
-                  style={{
-                    padding: "8px",
-                    borderRadius: "5px",
-                    border: "1px solid #CCC",
-                    width: "100%",
-                    boxSizing: "border-box",
-                  }}
-/>
               </div>
-            )}
+
+
+     
+
+
+
+{!includeStorage && (
+  <div
+    style={{
+      marginTop: "10px",
+      padding: "12px 14px",
+      borderRadius: "6px",
+      backgroundColor: "#EFF6FF",        // light blue
+      border: "1px solid #BFDBFE",       // blue border
+      color: "#1E3A8A",                  // dark blue text
+      fontSize: "0.9rem",
+      lineHeight: 1.5,
+    }}
+  >
+    <strong>Storage is currently turned off.</strong>{" "}
+    The calculator only sizes wind and solar so they match annual demand on
+    average, with no backup for calm, cloudy periods.
+    <br />
+    Turn this switch on to add <strong>pumped-hydro storage</strong> sized
+    for a number of low-renewables days. This will increase the extra wind
+    &amp; solar capacity required and show the water volume needed in the
+    <strong> “Pumped Hydro”</strong> panel.
+  </div>
+)}
+
+{includeStorage && (
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "1fr 3fr",
+      alignItems: "center",
+      gap: "10px",
+    }}
+  >
+    
+
+    <label style={{ textAlign: "left" }}>
+                            Typical Current Low Power Demand At Night (GW):
+                          </label>
+                          <input
+                            type="number"
+                            value={formData.electricity.lowDemandGW}
+                            onChange={(e) =>
+                              handleChange(e, "lowDemandGW", "electricity")
+                            }
+                            style={{
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #CCC",
+                              width: "100%",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                          <label style={{ textAlign: "left" }}>
+                            Typical Current Low Power Demand During Day (GW):
+                          </label>
+                          <input
+                            type="number"
+                            value={formData.electricity.lowDemandDuringDayGW}
+                            onChange={(e) =>
+                              handleChange(e, "lowDemandDuringDayGW", "electricity")
+                            }
+                            style={{
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #CCC",
+                              width: "100%",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                          <label style={{ textAlign: "left" }}>
+                            Height Between Upper and Lower Lake (m):
+                          </label>
+                          <input
+                            type="number"
+                            value={lakeHeightDifference}
+                            onChange={(e) =>
+                              setLakeHeightDifference(parseFloat(e.target.value))
+                            }
+                            style={{
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #CCC",
+                              width: "100%",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                          <label style={{ textAlign: "left" }}>
+                            Number of Storage Days:
+                          </label>
+                          <input
+                            type="number"
+                            value={storageDuration}
+                            onChange={(e) => setStorageDuration(parseFloat(e.target.value))}
+                            style={{
+                              padding: "8px",
+                              borderRadius: "5px",
+                              border: "1px solid #CCC",
+                              width: "100%",
+                              boxSizing: "border-box",
+                            }}
+                          />
+
+
+  </div>
+)}
+
+
+
+
+
           </div>
         </div>
       </div>
