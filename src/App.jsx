@@ -209,7 +209,7 @@ function App() {
     const electricityNeededShipping = (kgOfHydrogenNeeded * 56) / 1000000000;
 
     const residentialHeat = formData.heat.residentialHeat
-      ? parseFloat(formData.heat.residentialHeat) / 4
+      ? parseFloat(formData.heat.residentialHeat) / 3.5
       : 0;
     const industryHeat = formData.heat.industryHeat
       ? parseFloat(formData.heat.industryHeat)
@@ -3049,7 +3049,20 @@ function App() {
                 },
               },
               scales: {
-                x: { stacked: true },
+                x: {
+                  stacked: true,
+                  ticks: {
+                    font: {
+                      size: 18,        // ⬅️ Make category labels big
+                      weight: "bold",  // ⬅️ and bold
+                    },
+                    color: "#111827",  // ⬅️ Dark, high contrast
+                    padding: 12,       // ⬅️ Extra breathing room
+                  },
+                  grid: {
+                    display: false,    // ⬅️ No vertical grid lines so labels stand out
+                  },
+                },
                 y: {
                   stacked: true,
                   title: {
